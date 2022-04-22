@@ -1,0 +1,13 @@
+{
+  "name": "@onset/browser",
+  "description": "Official Sentry SDK for Browsers",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "tsconfig": "*",
+    "axios": "^0.26.1"
+  }
+}

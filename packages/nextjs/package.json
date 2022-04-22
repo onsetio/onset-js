@@ -1,0 +1,13 @@
+{
+  "name": "@onset/nextjs",
+  "description": "Official Onset SDK for Next.js",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "tsconfig": "*",
+    "@onset/browser": "*"
+  }
+}
