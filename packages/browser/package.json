@@ -1,10 +1,11 @@
 {
   "name": "@onset/browser",
   "description": "Official Sentry SDK for Browsers",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "./src/index.ts",
   "scripts": {
-    "build": "npx tsc"
+    "build": "npx tsc",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "tsconfig": "*",

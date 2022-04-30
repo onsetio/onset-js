@@ -1,6 +1,6 @@
 {
-  "name": "@onset/node",
-  "description": "Official Onset SDK for Node.js",
+  "name": "@onset/widget",
+  "description": "Official Onset SDK for Widget Embed",
   "version": "0.0.0",
   "main": "./src/index.ts",
   "scripts": {
@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "tsconfig": "*",
-    "axios": "^0.26.1"
+    "@onset/browser": "*"
   }
 }
