@@ -1,22 +1,11 @@
+import { Subscriber } from 'interfaces';
+
 export interface SubscriberQuery {
   offset?: number;
   limit?: number;
 }
 
-export interface SubscriberCreate {
-  email: string;
-  is_public: boolean;
-}
+export interface SubscriberCreateBody
+  extends Pick<Subscriber, 'email' | 'is_public'> {}
 
-export interface SubscriberUpdate {
-  is_public: boolean;
-}
-
-export interface Subscriber {
-  id: string;
-  email: string;
-  is_public: boolean;
-  organization_id: string;
-  created_at: string;
-  updated_at: string;
-}
+export interface SubscriberUpdateBody extends Pick<Subscriber, 'is_public'> {}

@@ -16,12 +16,6 @@ export default class Widget extends EventTarget {
   constructor(options: WidgetOptions) {
     super();
 
-    const onsetWidget = (window as any).onsetWidget;
-
-    if (Array.isArray(onsetWidget?.$)) {
-      onsetWidget.$.forEach((args: [string, () => void]) => this.on(...args));
-    }
-
     if (!options.page) {
       throw new Error('[ONSET] - Page slug is not defined.');
     }

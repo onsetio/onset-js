@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
+import type { Release } from 'interfaces';
 import type {
-  Release,
   ReleaseQuery,
   ReleaseBody,
   ReleasePublishBody,

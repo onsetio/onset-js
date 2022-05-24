@@ -1,5 +1,6 @@
 import type { AxiosInstance } from 'axios';
-import type { Project, ProjectQuery, Integration } from './types/project';
+import type { Integration, Project } from 'interfaces';
+import type { ProjectQuery } from './types/project';
 
 export class Projects {
   private client: AxiosInstance;

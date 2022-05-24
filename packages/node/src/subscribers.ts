@@ -1,9 +1,9 @@
 import type { AxiosInstance } from 'axios';
+import type { Subscriber } from 'interfaces';
 import type {
-  Subscriber,
   SubscriberQuery,
-  SubscriberCreate,
-  SubscriberUpdate,
+  SubscriberUpdateBody,
+  SubscriberCreateBody,
 } from './types/subscriber';
 
 export class Subscribers {
@@ -24,12 +24,12 @@ export class Subscribers {
     return data;
   }
 
-  async create(body: SubscriberCreate): Promise<Subscriber> {
+  async create(body: SubscriberCreateBody): Promise<Subscriber> {
     const { data } = await this.client.post(`${this.path}/subscribers`, body);
     return data;
   }
 
-  async update(id: string, body: SubscriberUpdate): Promise<Subscriber> {
+  async update(id: string, body: SubscriberUpdateBody): Promise<Subscriber> {
     const { data } = await this.client.put(
       `${this.path}/subscribers/${id}`,
       body

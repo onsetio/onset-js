@@ -2,13 +2,17 @@
   "name": "@onset/node",
   "description": "Official Onset SDK for Node.js",
   "version": "0.0.0",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "npx tsc",
     "clean": "rimraf dist"
   },
   "dependencies": {
     "tsconfig": "*",
+    "interfaces": "*",
     "axios": "^0.26.1"
   }
 }

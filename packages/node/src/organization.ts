@@ -1,5 +1,5 @@
 import type { AxiosInstance } from 'axios';
-import type { Organization as IOrganization } from './types/organization';
+import type { Organization as IOrganization } from 'interfaces';
 
 export class Organization {
   private client: AxiosInstance;

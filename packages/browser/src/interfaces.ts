@@ -3,6 +3,19 @@ export interface ExternalLink {
   url: string;
 }
 
+export type ReleaseChangeType =
+  | 'added'
+  | 'changed'
+  | 'deprecated'
+  | 'fixed'
+  | 'removed'
+  | 'security';
+
+export interface ReleaseChange {
+  type: ReleaseChangeType;
+  description: string;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -37,6 +50,6 @@ export interface Release {
   release_date: string;
   description: string;
   change_count: number;
-  change_list: [];
+  change_list: ReleaseChange[];
   url: string;
 }
