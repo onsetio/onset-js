@@ -4,6 +4,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "clean": {
+      "outputs": []
+    },
     "lint": {
       "outputs": []
     },
