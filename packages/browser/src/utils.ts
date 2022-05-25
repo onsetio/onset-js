@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Organization, Project, Release } from './interfaces';
+import { Label, Organization, Project, Release } from './interfaces';
 
 export async function fetchData(page: string) {
   const { data: releases } = await axios.get<Release[]>(
@@ -11,16 +11,26 @@ export async function fetchData(page: string) {
 
   const seen = new Set();
   const projects: Project[] = [];
+  const labels: Label[] = [];
 
-  releases.forEach(({ project }) => {
-    if (!seen.has(project.id)) {
-      projects.push(project);
+  releases.forEach((release) => {
+    if (!seen.has(release.project.id)) {
+      projects.push(release.project);
     }
 
-    seen.add(project.id);
+    seen.add(release.project.id);
+
+    release.labels.forEach((label) => {
+      if (!seen.has(label.id)) {
+        labels.push(label);
+      }
+
+      seen.add(label.id);
+    });
   });
 
   return {
+    labels,
     releases,
     projects,
     organization,

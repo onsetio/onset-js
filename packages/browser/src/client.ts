@@ -9,6 +9,13 @@ export async function loadPage(page: string) {
 
   return {
     organization: data.organization,
+    labels(slug?: string) {
+      if (!slug) {
+        return data.labels;
+      }
+
+      return data.labels.filter((label) => label.slug === slug);
+    },
     projects(slug: string) {
       if (!slug) {
         return data.projects;

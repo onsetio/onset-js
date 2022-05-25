@@ -39,6 +39,13 @@ export interface Project {
   version_enabled: boolean;
 }
 
+export interface Label {
+  id: string;
+  name: string;
+  slug: string;
+  color: string;
+}
+
 export interface Release {
   id: string;
   slug: string;
@@ -51,5 +58,6 @@ export interface Release {
   description: string;
   change_count: number;
   change_list: ReleaseChange[];
+  labels: Label[];
   url: string;
 }

@@ -28,6 +28,16 @@ export interface Subscriber {
   updated_at: string;
 }
 
+export interface Label {
+  id: string;
+  name: string;
+  slug: string;
+  color: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ReleaseChange {
   type: 'added' | 'changed' | 'deprecated' | 'fixed' | 'removed' | 'security';
   description: string;
@@ -50,6 +60,7 @@ export interface Release {
   description_html: string;
   change_list: ReleaseChange[];
   change_list_html: ReleaseChange[];
+  label_ids: string[];
   author_id: string;
   project_id: string;
   organization_id: string;

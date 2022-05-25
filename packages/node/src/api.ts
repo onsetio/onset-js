@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 import { Organization } from './organization';
+import { Labels } from './labels';
 import { Projects } from './projects';
 import { Releases } from './releases';
 import { Subscribers } from './subscribers';
@@ -37,5 +38,9 @@ export default class OnsetAPI {
 
   get subscribers() {
     return new Subscribers(this.client);
+  }
+
+  get labels() {
+    return new Labels(this.client);
   }
 }
