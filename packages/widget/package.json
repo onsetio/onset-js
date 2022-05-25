@@ -1,5 +1,5 @@
 {
-  "name": "@onset/widget",
+  "name": "@onsetio/widget",
   "description": "Official Onset SDK for Widget Embed",
   "version": "0.0.1",
   "main": "./dist/index.js",
@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "tsconfig": "*",
-    "@onset/browser": "*"
+    "@onsetio/browser": "*"
   }
 }

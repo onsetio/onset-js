@@ -1,5 +1,5 @@
 {
-  "name": "@onset/node",
+  "name": "@onsetio/node",
   "description": "Official Onset SDK for Node.js",
   "version": "0.0.1",
   "main": "./dist/index.js",
