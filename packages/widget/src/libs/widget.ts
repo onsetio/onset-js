@@ -120,8 +120,9 @@ export default class WidgetEmbed extends EventTarget {
     const organization = this.data;
     const zIndex = 2147483638;
     const colorYiq =
-      this.options.triggerTextColor || organization.color_yiq || 'FFFFFF';
-    const color = this.options.triggerBgColor || organization.color || '3e45eb';
+      this.options.triggerTextColor ?? organization.color_yiq ?? '#FFFFFF';
+    const color =
+      this.options.triggerBgColor ?? organization.color ?? '#3e45eb';
 
     const styles = `
       #ow_container {

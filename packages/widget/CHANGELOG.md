@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.6
+
+### Patch Changes
+
+- fixed the colors
+
 ## 0.0.5
 
 ### Patch Changes
