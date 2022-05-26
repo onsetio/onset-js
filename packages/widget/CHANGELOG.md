@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.5
+
+### Patch Changes
+
+- fixed the styles
+
 ## 0.0.4
 
 ### Patch Changes

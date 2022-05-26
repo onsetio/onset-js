@@ -124,7 +124,7 @@ export default class WidgetEmbed extends EventTarget {
     const color = this.options.triggerBgColor || organization.color || '3e45eb';
 
     const styles = `
-      .ow_container {
+      #ow_container {
         opacity: 0;
         width: 100%;
         width: 100%;
@@ -139,7 +139,7 @@ export default class WidgetEmbed extends EventTarget {
       }
 
       @media (min-width: 576px) {
-        .ow_container {
+        #ow_container {
           max-width: 400px;
           max-height: 95%;
           right: 20px;
@@ -148,12 +148,12 @@ export default class WidgetEmbed extends EventTarget {
         }
       }
 
-      .ow_container.ow_show {
+      #ow_container.ow_show {
         opacity: 1;
         transform: translateX(0%);
       }
 
-      .ow_app {
+      #ow_app {
         width: 100%;
         height: 100%;
         border: 0px;
@@ -161,7 +161,7 @@ export default class WidgetEmbed extends EventTarget {
         z-index: ${zIndex};
       }
 
-      .ow_trigger {
+      #ow_trigger {
         top: 50%;
         right: 0;
         position: fixed;
@@ -177,7 +177,7 @@ export default class WidgetEmbed extends EventTarget {
         transform: translate3d(50%,-50%,0) rotate(270deg) translateY(50%);
       }
 
-      .ow_trigger.ow_show {
+      #ow_trigger.ow_show {
         transform: translate3d(50%,-50%,0) rotate(270deg) translateY(-50%);
       }
     `;
