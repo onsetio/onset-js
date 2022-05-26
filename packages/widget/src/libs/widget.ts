@@ -105,8 +105,7 @@ export default class WidgetEmbed extends EventTarget {
 
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
-      this.showContainer();
-      this.hideTrigger();
+      this.instance.show();
     });
 
     document.body.append(trigger);
