@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.4
+
+### Patch Changes
+
+- fixed the widget instance
+
 ## 0.0.3
 
 ### Patch Changes

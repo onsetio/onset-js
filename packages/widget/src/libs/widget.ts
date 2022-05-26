@@ -84,7 +84,7 @@ export default class WidgetEmbed extends EventTarget {
       app.contentDocument?.head.append(style);
 
       // set widget properties
-      (app.contentWindow as any).widget = this;
+      (app.contentWindow as any).widget = this.instance;
       app.contentDocument?.body.append(root);
       app.contentDocument?.body.append(script);
     });
