@@ -21,14 +21,7 @@ export default class Widget extends EventTarget {
     }
 
     this.options = options;
-
-    this.#embed = new WidgetEmbed(options, () => {
-      if (this.options.showOnLoad) {
-        this.show();
-      } else if (!this.options.customTrigger) {
-        this.#embed.showTrigger();
-      }
-    });
+    this.#embed = new WidgetEmbed(options, this);
   }
 
   #triggerEvent(name: string, details: any = {}) {
@@ -71,6 +64,14 @@ export default class Widget extends EventTarget {
     }
 
     this.removeEventListener(name, this.#eventHandler(fn));
+  }
+
+  onReady(releases: any[] = []) {
+    if (this.options.showOnLoad) {
+      this.show();
+    } else if (!this.options.customTrigger) {
+      this.#embed.showTrigger();
+    }
   }
 
   show() {
