@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.9
+
+### Patch Changes
+
+- Removed the stylesheet
+
 ## 0.0.8
 
 ### Patch Changes
