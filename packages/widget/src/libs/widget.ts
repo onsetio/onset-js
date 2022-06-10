@@ -74,14 +74,8 @@ export default class WidgetEmbed extends EventTarget {
     script.src = `${URL}/static/js/main.js`;
     script.async = true;
 
-    // app style
-    const style = document.createElement('link');
-    style.href = `${URL}/static/css/main.css`;
-    style.rel = 'stylesheet';
-
     app.addEventListener('load', () => {
       app.contentDocument?.head.append(base);
-      app.contentDocument?.head.append(style);
 
       // set widget properties
       (app.contentWindow as any).widget = this.instance;
