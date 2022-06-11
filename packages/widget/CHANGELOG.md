@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.12
+
+### Patch Changes
+
+- fixed the widget url
+
 ## 0.0.11
 
 ### Patch Changes
