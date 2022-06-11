@@ -1,3 +1,3 @@
-# Official Onset SDK for Widget
+# Official Onset SDK for Widget Embed
 
 Coming soon...

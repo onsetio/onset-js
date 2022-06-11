@@ -1,4 +1,5 @@
 import WidgetEmbed from './libs/widget';
+import { getCookie, setCookie } from './utils/cookie';
 
 export interface WidgetOptions {
   page: string;
@@ -7,11 +8,18 @@ export interface WidgetOptions {
   triggerBgColor?: string;
   customTrigger?: boolean;
   showOnLoad?: boolean;
+  project?: string;
+  direction?: 'left' | 'right' | 'center';
+  triggerDirection?: 'left' | 'right';
+  theme?: string;
+  width?: number;
+  hideBadge?: boolean;
 }
 
 export default class Widget extends EventTarget {
   options: WidgetOptions;
   #embed: WidgetEmbed;
+  #releases?: any[];
 
   constructor(options: WidgetOptions) {
     super();
@@ -42,6 +50,24 @@ export default class Widget extends EventTarget {
     } as EventListenerOrEventListenerObject;
   }
 
+  get #newReleaseCount() {
+    const latestSeen = getCookie('onset:latest');
+
+    if (!latestSeen) {
+      return 0;
+    }
+
+    let releases = this.#releases || [];
+
+    if (this.options.project) {
+      releases = releases.filter(
+        ({ project }) => project.slug === this.options.project
+      );
+    }
+
+    return releases.findIndex(({ id }) => id === latestSeen);
+  }
+
   get isReady() {
     return this.#embed.isReady;
   }
@@ -67,10 +93,30 @@ export default class Widget extends EventTarget {
   }
 
   onReady(releases: any[] = []) {
+    this.#triggerEvent('ready', { releases });
+
     if (this.options.showOnLoad) {
       this.show();
     } else if (!this.options.customTrigger) {
       this.#embed.showTrigger();
+      this.onNewRelease(releases);
+    }
+  }
+
+  onNewRelease(releases: any[] = []) {
+    this.#releases = releases;
+    const releaseCount = this.#newReleaseCount;
+
+    if (!this.options.hideBadge && releaseCount > 0) {
+      this.#triggerEvent('new_release', { count: releaseCount });
+      this.#embed.showBadge(releaseCount.toString());
+    }
+  }
+
+  #markAsRead() {
+    if (this.#releases) {
+      setCookie('onset:latest', this.#releases[0].id);
+      this.#triggerEvent('read');
     }
   }
 
@@ -82,6 +128,11 @@ export default class Widget extends EventTarget {
     }
 
     this.#triggerEvent('show');
+
+    setTimeout(() => {
+      this.#embed.hideBadge();
+      this.#markAsRead();
+    }, 1000);
   }
 
   hide() {

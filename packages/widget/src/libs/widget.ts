@@ -1,16 +1,18 @@
 import Widget, { WidgetOptions } from '../index';
 
-const URL = 'https://widget-js.onset.io';
+const URL = 'http://localhost:3000';
 
 export default class WidgetEmbed extends EventTarget {
   options: WidgetOptions;
   isReady = false;
   isOpen = false;
+  hasNew = false;
 
   data: any;
-  app?: HTMLDivElement;
-  container?: HTMLDivElement;
-  trigger?: HTMLDivElement;
+  app!: HTMLDivElement;
+  container!: HTMLDivElement;
+  trigger!: HTMLDivElement;
+  badge!: HTMLDivElement;
   instance: Widget;
 
   constructor(options: WidgetOptions, instance: Widget) {
@@ -85,6 +87,7 @@ export default class WidgetEmbed extends EventTarget {
 
       // set widget properties
       (app.contentWindow as any).widget = this.instance;
+      (app.contentWindow as any).data = this.data;
       app.contentDocument?.body.append(root);
       app.contentDocument?.body.append(script);
     });
@@ -113,36 +116,43 @@ export default class WidgetEmbed extends EventTarget {
     this.trigger = trigger;
   }
 
+  setupBadge() {
+    const badge = document.createElement('div');
+    badge.id = 'ow_badge';
+    this.trigger.append(badge);
+    this.badge = badge;
+  }
+
   setupStylesheet() {
     const style = document.createElement('style');
 
     const organization = this.data;
     const zIndex = 2147483638;
+    const width = this.options.width || 400;
     const colorYiq =
       this.options.triggerTextColor ?? organization.color_yiq ?? '#FFFFFF';
     const color =
       this.options.triggerBgColor ?? organization.color ?? '#3e45eb';
+    const direction = this.options.direction ?? 'right';
+    const triggerDirection = this.options.triggerDirection || direction;
 
-    const styles = `
+    let styles = `
       #ow_container {
         opacity: 0;
-        width: 100%;
         width: 100%;
         height: 100%;
         bottom: 0;
         position: fixed;
         overflow: hidden;
-        z-index: ${zIndex};
+        z-index: -${zIndex};
         box-shadow: 0 5px 40px rgba(0,0,0,.2);
-        transform: translateX(120%);
         transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 1s cubic-bezier(0.19, 1, 0.22, 1);
       }
 
       @media (min-width: 576px) {
         #ow_container {
-          max-width: 400px;
+          max-width: ${width}px;
           max-height: 95%;
-          right: 20px;
           bottom: 20px;
           border-radius: 6px;
         }
@@ -150,6 +160,7 @@ export default class WidgetEmbed extends EventTarget {
 
       #ow_container.ow_show {
         opacity: 1;
+        z-index: ${zIndex};
         transform: translateX(0%);
       }
 
@@ -163,7 +174,6 @@ export default class WidgetEmbed extends EventTarget {
 
       #ow_trigger {
         top: 50%;
-        right: 0;
         position: fixed;
         cursor: pointer;
         z-index: ${zIndex};
@@ -174,13 +184,87 @@ export default class WidgetEmbed extends EventTarget {
         background-color: ${color};
         box-shadow: 0 0 8px 0 rgba(0,0,0,.25);
         transition: transform .5s cubic-bezier(0.19, 1, 0.22, 1);
-        transform: translate3d(50%,-50%,0) rotate(270deg) translateY(50%);
       }
 
-      #ow_trigger.ow_show {
-        transform: translate3d(50%,-50%,0) rotate(270deg) translateY(-50%);
+      #ow_badge {
+        display: none;
+        border-radius: 3px;
+        vertical-align: middle;
+        margin-left: 5px;
+        background-color: rgba(0,0,0,30%);
+        font-size: 85%;
+        padding: 1px 4px;
       }
     `;
+
+    if (triggerDirection === 'left') {
+      styles += `
+        #ow_trigger {
+          left: 0;
+          transform: translate3d(-50%,-50%,0) rotate(-270deg) translateY(50%);
+        }
+
+        #ow_trigger.ow_show {
+          transform: translate3d(-50%,-50%,0) rotate(-270deg) translateY(-50%);
+        }
+      `;
+    }
+
+    if (triggerDirection === 'right') {
+      styles += `
+        #ow_trigger {
+          right: 0;
+          transform: translate3d(50%,-50%,0) rotate(270deg) translateY(50%);
+        }
+
+        #ow_trigger.ow_show {
+          transform: translate3d(50%,-50%,0) rotate(270deg) translateY(-50%);
+        }
+      `;
+    }
+
+    if (direction === 'left') {
+      styles += `
+        #ow_container {
+          transform: translateX(-120%);
+        }
+
+
+        @media (min-width: 576px) {
+          #ow_container {
+            left: 20px;
+          }
+        }
+      `;
+    }
+
+    if (direction === 'right') {
+      styles += `
+        #ow_container {
+          transform: translateX(120%);
+        }
+
+
+        @media (min-width: 576px) {
+          #ow_container {
+            right: 20px;
+          }
+        }
+      `;
+    }
+
+    if (direction === 'center') {
+      styles += `
+        @media (min-width: 576px) {
+          #ow_container,
+          #ow_container.ow_show {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
+        }
+      `;
+    }
 
     style.innerText = styles.trim().replace(/(\r\n|\n|\r)/gm, '');
     document.head.append(style);
@@ -192,6 +276,10 @@ export default class WidgetEmbed extends EventTarget {
 
     if (!this.options.customTrigger) {
       this.setupTrigger();
+
+      if (!this.options.hideBadge) {
+        this.setupBadge();
+      }
     }
   }
 
@@ -200,21 +288,34 @@ export default class WidgetEmbed extends EventTarget {
     this.instance.onReady(releases);
   }
 
+  onNewRelease(releases: any[]) {
+    this.instance.onNewRelease(releases);
+  }
+
   showContainer() {
     this.isOpen = true;
-    this.container?.classList.add('ow_show');
+    this.container.classList.add('ow_show');
   }
 
   hideContainer() {
     this.isOpen = false;
-    this.container?.classList.remove('ow_show');
+    this.container.classList.remove('ow_show');
   }
 
   showTrigger() {
-    this.trigger?.classList.add('ow_show');
+    this.trigger.classList.add('ow_show');
   }
 
   hideTrigger() {
-    this.trigger?.classList.remove('ow_show');
+    this.trigger.classList.remove('ow_show');
+  }
+
+  showBadge(count: string) {
+    this.badge.innerText = count;
+    this.badge.style.display = 'inline-block';
+  }
+
+  hideBadge() {
+    this.badge.style.display = 'none';
   }
 }

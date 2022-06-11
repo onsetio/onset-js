@@ -41,12 +41,14 @@ export function getCookie(name: string) {
 export function setCookie(
   name: string,
   data: any,
-  domain: string,
+  domain?: string,
   expires = 'Fri, 31 Dec 9999 23:59:59 GMT'
 ) {
+  domain = domain ?? getDomain();
   document.cookie = `${name}=${data};expires=${expires};path=/;domain=${domain};`;
 }
 
-export function removeCookie(name: string, domain: string) {
+export function removeCookie(name: string, domain?: string) {
+  domain = domain ?? getDomain();
   setCookie(name, null, domain, 'Thu, 01 Jan 1970 00:00:00 UTC');
 }
