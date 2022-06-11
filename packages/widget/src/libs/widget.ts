@@ -1,6 +1,6 @@
 import Widget, { WidgetOptions } from '../index';
 
-const URL = 'http://localhost:3000';
+const URL = 'https://widget-js.onset.io';
 
 export default class WidgetEmbed extends EventTarget {
   options: WidgetOptions;
