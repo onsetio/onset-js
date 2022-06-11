@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.11
+
+### Patch Changes
+
+- widget badge
+
 ## 0.0.10
 
 ### Patch Changes
