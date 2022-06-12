@@ -3,10 +3,11 @@
 </a>
 
 # Official Onset SDK for Node.js
+Used for loading public and private releases.
 
 ## Installation and Usage
 
-To install a SDK, simply install the package:
+Simply install the package:
 
 ```sh
 npm install --save @onsetio/node
