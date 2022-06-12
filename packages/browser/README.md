@@ -1,5 +1,5 @@
 <a href="https://www.onset.io/?utm_source=github&utm_medium=logo" target="_blank">
-  <img src="https://www.onset.io/logo-white.png" alt="Onset" height="84">
+  <img src="https://www.onset.io/logo.png" alt="Onset" height="84">
 </a>
 
 # Official Sentry SDK for Browsers
