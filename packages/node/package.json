@@ -1,7 +1,7 @@
 {
   "name": "@onsetio/node",
   "description": "Official Onset SDK for Node.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "./dist/index.js",
   "files": [
     "dist/**/*"
