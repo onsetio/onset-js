@@ -192,8 +192,9 @@ export default class WidgetEmbed extends EventTarget {
         vertical-align: middle;
         margin-left: 5px;
         background-color: rgba(0,0,0,30%);
-        font-size: 85%;
-        padding: 1px 4px;
+        font-size: 80%;
+        line-height: 1;
+        padding: 5px 8px;
       }
     `;
 
