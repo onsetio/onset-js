@@ -3,6 +3,7 @@ import { getCookie, setCookie } from './utils/cookie';
 
 export interface WidgetOptions {
   page: string;
+  title: string;
   triggerTextColor?: string;
   triggerText: string;
   triggerBgColor?: string;
