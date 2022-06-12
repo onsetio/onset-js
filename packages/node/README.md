@@ -3,6 +3,8 @@
 </a>
 
 # Official Onset SDK for Node.js
+[![npm version](https://img.shields.io/npm/v/@onsetio/node.svg)](https://www.npmjs.com/package/@onsetio/node)
+
 Used for loading public and private releases.
 
 ## Installation and Usage
