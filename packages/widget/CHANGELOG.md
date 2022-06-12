@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.13
+
+### Patch Changes
+
+- fixed the widget badge
+
 ## 0.0.12
 
 ### Patch Changes
