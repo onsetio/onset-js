@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.0.16
+
+### Patch Changes
+
+- Fixed the badge style error
+
 ## 0.0.15
 
 ### Patch Changes
