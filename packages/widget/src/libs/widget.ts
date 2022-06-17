@@ -11,8 +11,8 @@ export default class WidgetEmbed extends EventTarget {
   data: any;
   app!: HTMLDivElement;
   container!: HTMLDivElement;
-  trigger!: HTMLDivElement;
-  badge!: HTMLDivElement;
+  trigger?: HTMLDivElement;
+  badge?: HTMLDivElement;
   instance: Widget;
 
   constructor(options: WidgetOptions, instance: Widget) {
@@ -117,6 +117,10 @@ export default class WidgetEmbed extends EventTarget {
   }
 
   setupBadge() {
+    if (!this.trigger) {
+      return;
+    }
+
     const badge = document.createElement('div');
     badge.id = 'ow_badge';
     this.trigger.append(badge);
@@ -304,19 +308,35 @@ export default class WidgetEmbed extends EventTarget {
   }
 
   showTrigger() {
+    if (!this.trigger) {
+      return;
+    }
+
     this.trigger.classList.add('ow_show');
   }
 
   hideTrigger() {
+    if (!this.trigger) {
+      return;
+    }
+
     this.trigger.classList.remove('ow_show');
   }
 
   showBadge(count: string) {
+    if (!this.badge) {
+      return;
+    }
+
     this.badge.innerText = count;
     this.badge.style.display = 'inline-block';
   }
 
   hideBadge() {
+    if (!this.badge) {
+      return;
+    }
+
     this.badge.style.display = 'none';
   }
 }
