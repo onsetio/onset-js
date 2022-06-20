@@ -2,7 +2,8 @@
   <img src="https://www.onset.io/logo.png" alt="Onset" height="84">
 </a>
 
-# Official Sentry SDK for Browsers
+# Official Onset SDK for Browsers
+
 [![npm version](https://img.shields.io/npm/v/@onsetio/browser.svg)](https://www.npmjs.com/package/@onsetio/browser)
 
 Used for loading public releases.
