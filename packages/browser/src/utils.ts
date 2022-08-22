@@ -1,39 +1,44 @@
 import axios from 'axios';
-import { Label, Organization, Project, Release } from './interfaces';
+import { Label, Organization, Project, Release, Feature } from './interfaces';
 
 export async function fetchData(page: string) {
   const { data: releases } = await axios.get<Release[]>(
     `https://${page}/releases.json`
   );
+
+  const { data: roadmap } = await axios.get<Feature[]>(
+    `https://${page}/roadmap.json`
+  );
+
   const { data: organization } = await axios.get<Organization>(
     `https://${page}/data.json`
   );
 
-  const seen = new Set();
-  const projects: Project[] = [];
-  const labels: Label[] = [];
+  const projects = new Map<string, Project>();
+  const labels = new Map<string, Label>();
 
   releases.forEach((release) => {
-    if (!seen.has(release.project.id)) {
-      projects.push(release.project);
+    if (release.project) {
+      projects.set(release.project.slug, release.project);
     }
 
-    seen.add(release.project.id);
+    release.labels.forEach((label) => labels.set(label.slug, label));
+  });
 
-    release.labels.forEach((label) => {
-      if (!seen.has(label.id)) {
-        labels.push(label);
-      }
+  roadmap.forEach((feature) => {
+    if (feature.project) {
+      projects.set(feature.project.slug, feature.project);
+    }
 
-      seen.add(label.id);
-    });
+    feature.labels.forEach((label) => labels.set(label.slug, label));
   });
 
   return {
-    labels,
+    roadmap,
     releases,
-    projects,
     organization,
+    labels: Array.from(labels.values()),
+    projects: Array.from(projects.values()),
   };
 }
 
@@ -46,9 +51,16 @@ export function releaseReact(page: string, data: ReactBody) {
   return axios.post(`https://${page}/api/react`, data);
 }
 
+type VoteBody = {
+  id: string;
+};
+
+export function roadmapVote(page: string, data: VoteBody) {
+  return axios.post(`https://${page}/api/vote`, data);
+}
+
 type SubscribeBody = {
   email: string;
-  organization_id: string;
 };
 
 export function newSubscriber(page: string, data: SubscribeBody) {

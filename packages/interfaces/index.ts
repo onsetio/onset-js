@@ -1,17 +1,22 @@
-export interface Organization {
+interface Base {
   id: string;
+  created_at: string;
+  updated_at: string;
+  organization_id: string;
+}
+
+export interface Organization extends Omit<Base, 'organization_id'> {
   name: string;
   slug: string;
   url: string;
   page_domain: string | null;
 }
 
-export interface Project {
-  id: string;
+export interface Project extends Base {
   name: string;
   slug: string;
-  organization_id: string;
-  is_public: boolean;
+  version_enabled: boolean;
+  version_pre_release_enabled: boolean;
 }
 
 export interface Integration {
@@ -19,23 +24,15 @@ export interface Integration {
   type: string;
 }
 
-export interface Subscriber {
-  id: string;
+export interface Subscriber extends Base {
   email: string;
   is_public: boolean;
-  organization_id: string;
-  created_at: string;
-  updated_at: string;
 }
 
-export interface Label {
-  id: string;
+export interface Label extends Base {
   name: string;
   slug: string;
   color: string;
-  organization_id: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface ReleaseChange {
@@ -43,8 +40,7 @@ export interface ReleaseChange {
   description: string;
 }
 
-export interface Release {
-  id: string;
+export interface Release extends Base {
   title: string;
   full_title: string;
   slug: string;
@@ -62,9 +58,34 @@ export interface Release {
   change_list_html: ReleaseChange[];
   label_ids: string[];
   author_id: string;
-  project_id: string;
-  organization_id: string;
-  created_at: string;
-  updated_at: string;
+  share_id: string;
+  hero_image_url: string;
+  project_id: string | null;
   released_at: string | null;
+}
+
+type FeatureStatus =
+  | 'in-progress'
+  | 'planned'
+  | 'paused'
+  | 'testing'
+  | 'alpha'
+  | 'beta'
+  | 'released'
+  | 'pending'
+  | 'backlog'
+  | 'canceled';
+
+export interface Feature extends Base {
+  title: string;
+  slug: string;
+  status: FeatureStatus;
+  description: string;
+  description_html: string;
+  votes: number;
+  project_id: string | null;
+  released_at: string;
+  archived_at: string;
+  is_public: number;
+  progress: number;
 }

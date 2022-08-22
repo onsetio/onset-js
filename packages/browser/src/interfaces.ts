@@ -3,6 +3,12 @@ export interface ExternalLink {
   url: string;
 }
 
+export interface SocialLink {
+  twitter?: string;
+  facebook?: string;
+  linkedin?: string;
+}
+
 export type ReleaseChangeType =
   | 'added'
   | 'changed'
@@ -16,48 +22,87 @@ export interface ReleaseChange {
   description: string;
 }
 
-export interface Organization {
-  id: string;
+export interface ReleaseAuthor {
   name: string;
+  avatar: string;
+}
+
+export interface Organization {
   slug: string;
-  domain: string | null;
-  color: string | null;
-  website: string;
+  name: string;
+
   url: string;
+  domain: string | null;
+  website: string | null;
+
+  color: string | null;
+  color_yiq: string;
+
   icon: string;
   logo: string;
-  color_yiq: string;
-  allow_subscribers: boolean;
+  logo_dark: string;
+
+  social_links: SocialLink;
   external_links: ExternalLink[];
+
+  allow_subscribers: boolean;
+  has_releases: boolean;
+  has_roadmap: boolean;
 }
 
 export interface Project {
-  id: string;
   slug: string;
   name: string;
   url: string;
-  version_enabled: boolean;
 }
 
 export interface Label {
-  id: string;
   name: string;
   slug: string;
   color: string;
+  url: string;
 }
 
 export interface Release {
   id: string;
   slug: string;
   title: string;
-  project: Project;
   is_pinned: boolean;
   version: string;
-  released_at: string;
-  release_date: string;
   description: string;
+  hero_image: string;
+
+  released_at: string;
+  released_date: string;
+  released_month: string;
+
   change_count: number;
   change_list: ReleaseChange[];
-  labels: Label[];
+
   url: string;
+
+  labels: Label[];
+  project?: Project;
+  author?: ReleaseAuthor;
+}
+
+export interface Feature {
+  id: string;
+  slug: string;
+  title: string;
+  votes: number;
+  status: string;
+  progress: number;
+  description: string;
+
+  created_at: string;
+  created_date: string;
+
+  released_at: string;
+  released_date: string;
+
+  url: string;
+
+  labels: Label[];
+  project?: Project;
 }

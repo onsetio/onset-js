@@ -1,4 +1,4 @@
-import { fetchData, releaseReact, newSubscriber } from './utils';
+import { fetchData, releaseReact, newSubscriber, roadmapVote } from './utils';
 
 export async function loadPage(page: string) {
   if (!page) {
@@ -29,6 +29,10 @@ export async function loadPage(page: string) {
       }
 
       return data.releases.filter((release) => {
+        if (!release.project) {
+          return false;
+        }
+
         if (release.project.slug !== project) {
           return false;
         }
@@ -40,12 +44,35 @@ export async function loadPage(page: string) {
         return release.slug === slug;
       });
     },
+    roadmap(project: string, slug?: string) {
+      if (!project) {
+        return data.roadmap;
+      }
+
+      return data.roadmap.filter((feature) => {
+        if (!feature.project) {
+          return false;
+        }
+
+        if (feature.project.slug !== project) {
+          return false;
+        }
+
+        if (!slug) {
+          return true;
+        }
+
+        return feature.slug === slug;
+      });
+    },
+    vote(id: string) {
+      return roadmapVote(page, { id });
+    },
     react(id: string, reaction: 'disappointed' | 'neutral' | 'smiley') {
       return releaseReact(page, { id, reaction });
     },
     subscribe(email: string) {
-      const organization_id = data.organization.id;
-      return newSubscriber(page, { email, organization_id });
+      return newSubscriber(page, { email });
     },
   };
 }

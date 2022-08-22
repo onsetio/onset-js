@@ -1,5 +1,4 @@
 export { default as default } from './api';
 
-export * from './types/project';
-export * from './types/release';
-export * from './types/subscriber';
+export * from 'interfaces';
+export * from './types';

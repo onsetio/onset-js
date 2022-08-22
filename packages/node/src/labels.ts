@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import type { Label } from 'interfaces';
-import type { LabelQuery, LabelBody } from './types/labels';
+import type { Query, LabelBody } from './types';
 
 export class Labels {
   private client: AxiosInstance;
@@ -10,7 +10,7 @@ export class Labels {
     this.client = client;
   }
 
-  async list(params: LabelQuery): Promise<Label[]> {
+  async list(params: Query): Promise<Label[]> {
     const { data } = await this.client.get(this.path, { params });
     return data;
   }
@@ -26,7 +26,7 @@ export class Labels {
   }
 
   async update(id: string, body: LabelBody): Promise<Label> {
-    const { data } = await this.client.put(`${this.path}/${id}`, body);
+    const { data } = await this.client.patch(`${this.path}/${id}`, body);
     return data;
   }
 

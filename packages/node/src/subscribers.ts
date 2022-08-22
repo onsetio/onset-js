@@ -1,10 +1,10 @@
 import type { AxiosInstance } from 'axios';
 import type { Subscriber } from 'interfaces';
 import type {
-  SubscriberQuery,
+  Query,
   SubscriberUpdateBody,
   SubscriberCreateBody,
-} from './types/subscriber';
+} from './types';
 
 export class Subscribers {
   private client: AxiosInstance;
@@ -14,7 +14,7 @@ export class Subscribers {
     this.client = client;
   }
 
-  async list(params: SubscriberQuery): Promise<Subscriber[]> {
+  async list(params: Query): Promise<Subscriber[]> {
     const { data } = await this.client.get(this.path, { params });
     return data;
   }

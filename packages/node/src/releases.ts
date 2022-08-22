@@ -1,10 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import type { Release } from 'interfaces';
-import type {
-  ReleaseQuery,
-  ReleaseBody,
-  ReleasePublishBody,
-} from './types/release';
+import type { Query, ReleaseBody, ReleasePublishBody } from './types';
 
 export class Releases {
   private client: AxiosInstance;
@@ -14,14 +10,8 @@ export class Releases {
     this.client = client;
   }
 
-  async list(params: ReleaseQuery = {}): Promise<Release[]> {
-    let path = this.path;
-
-    if (params.project_id) {
-      path = `/projects/${params.project_id}/release`;
-    }
-
-    const { data } = await this.client.get<Release[]>(path, { params });
+  async list(params: Query = {}): Promise<Release[]> {
+    const { data } = await this.client.get<Release[]>(this.path, { params });
     return data;
   }
 
@@ -31,8 +21,7 @@ export class Releases {
   }
 
   async create(body: ReleaseBody): Promise<Release> {
-    const path = `${this.path}/projects/${body.project_id}/releases`;
-    const { data } = await this.client.post<Release>(path, body);
+    const { data } = await this.client.post<Release>(this.path, body);
     return data;
   }
 
