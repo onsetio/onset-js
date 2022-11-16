@@ -10,16 +10,24 @@ export interface WidgetOptions {
   customTrigger?: boolean;
   showOnLoad?: boolean;
   project?: string;
+  showRoadmap?: boolean;
   direction?: 'left' | 'right' | 'center';
   triggerDirection?: 'left' | 'right';
-  theme?: string;
-  width?: number;
+  theme?: 'light' | 'dark' | 'system';
+  width?: string;
+  height?: string;
   hideBadge?: boolean;
+  allowSubscribers?: boolean;
 }
 
+export type WidgetUpdateOptions = Pick<
+  WidgetOptions,
+  'title' | 'theme' | 'project' | 'allowSubscribers'
+>;
+
 export default class Widget extends EventTarget {
-  options: WidgetOptions;
-  #embed: WidgetEmbed;
+  options!: WidgetOptions;
+  #embed!: WidgetEmbed;
   #releases?: any[];
 
   constructor(options: WidgetOptions) {
@@ -152,5 +160,31 @@ export default class Widget extends EventTarget {
     } else {
       this.show();
     }
+  }
+
+  reload(options: WidgetOptions) {
+    if (!options.page) {
+      throw new Error('[ONSET] - Page slug is not defined.');
+    }
+
+    this.options = options;
+    this.#embed.reload(options);
+    this.#triggerEvent('reload', options);
+  }
+
+  update(options: WidgetOptions) {
+    if (options.page && options.page !== this.options.page) {
+      throw new Error(
+        '[ONSET] - To change page slug use the .reload() method.'
+      );
+    }
+
+    this.options = {
+      ...this.options,
+      ...options,
+    };
+
+    this.#embed.update(options);
+    this.#triggerEvent('update', this.options);
   }
 }

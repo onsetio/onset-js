@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.1.0
+
+### Minor Changes
+
+- Added update method
+
 ## 0.0.17
 
 ### Patch Changes

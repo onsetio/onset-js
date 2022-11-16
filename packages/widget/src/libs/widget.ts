@@ -13,6 +13,8 @@ export default class WidgetEmbed extends EventTarget {
   container!: HTMLDivElement;
   trigger?: HTMLDivElement;
   badge?: HTMLDivElement;
+  stylesheet!: HTMLStyleElement;
+  customStylesheet!: HTMLStyleElement;
   instance: Widget;
 
   constructor(options: WidgetOptions, instance: Widget) {
@@ -25,6 +27,8 @@ export default class WidgetEmbed extends EventTarget {
   async init() {
     try {
       this.data = await this.fetchData();
+      this.setupStylesheet();
+      this.setupWidget();
       this.setup();
     } catch (err) {
       console.error('[ONSET] - Something went wrong.', err);
@@ -55,7 +59,7 @@ export default class WidgetEmbed extends EventTarget {
   }
 
   setupWidget() {
-    // create container
+    // create a container
     const container = document.createElement('div');
     container.id = 'ow_container';
 
@@ -129,23 +133,13 @@ export default class WidgetEmbed extends EventTarget {
 
   setupStylesheet() {
     const style = document.createElement('style');
-
-    const organization = this.data;
     const zIndex = 2147483638;
-    const width = this.options.width || 400;
-    const colorYiq =
-      this.options.triggerTextColor ?? organization.color_yiq ?? '#FFFFFF';
-    const color =
-      this.options.triggerBgColor ?? organization.color ?? '#3e45eb';
-    const direction = this.options.direction ?? 'right';
-    const triggerDirection = this.options.triggerDirection || direction;
 
     let styles = `
       #ow_container {
         opacity: 0;
         width: 100%;
         height: 100%;
-        bottom: 0;
         position: fixed;
         overflow: hidden;
         z-index: -${zIndex};
@@ -155,17 +149,15 @@ export default class WidgetEmbed extends EventTarget {
 
       @media (min-width: 576px) {
         #ow_container {
-          max-width: ${width}px;
-          max-height: 95%;
-          bottom: 20px;
+          top: 50%;
           border-radius: 6px;
+          transform: translate(0%, -50%);
         }
       }
 
       #ow_container.ow_show {
         opacity: 1;
         z-index: ${zIndex};
-        transform: translateX(0%);
       }
 
       #ow_app {
@@ -181,12 +173,11 @@ export default class WidgetEmbed extends EventTarget {
         position: fixed;
         cursor: pointer;
         z-index: ${zIndex};
-        color: ${colorYiq};
         padding: 10px 15px;
         transform-origin: center;
         border-radius: 3px 3px 0 0;
-        background-color: ${color};
         box-shadow: 0 0 8px 0 rgba(0,0,0,.25);
+        transform: translateY(-50%);
         transition: transform .5s cubic-bezier(0.19, 1, 0.22, 1);
       }
 
@@ -202,13 +193,45 @@ export default class WidgetEmbed extends EventTarget {
       }
     `;
 
+    style.innerText = styles.trim().replace(/(\r\n|\n|\r)/gm, '');
+    document.head.append(style);
+
+    this.stylesheet = style;
+  }
+
+  setupCustomStyle() {
+    const style = document.createElement('style');
+
+    const organization = this.data;
+    const width = this.options.width || '400px';
+    const height = this.options.height || '95%';
+    const colorYiq =
+      this.options.triggerTextColor ?? organization.color_yiq ?? '#FFFFFF';
+    const color =
+      this.options.triggerBgColor ?? organization.color ?? '#3e45eb';
+    const direction = this.options.direction ?? 'right';
+    const triggerDirection = this.options.triggerDirection || direction;
+
+    let styles = `
+      @media (min-width: 576px) {
+        #ow_container {
+          max-width: ${width};
+          max-height: ${height};
+        }
+      }
+
+      #ow_trigger {
+        color: ${colorYiq};
+        background-color: ${color};
+      }
+    `;
+
     if (triggerDirection === 'left') {
       styles += `
         #ow_trigger {
           left: 0;
           transform: translate3d(-50%,-50%,0) rotate(-270deg) translateY(50%);
         }
-
         #ow_trigger.ow_show {
           transform: translate3d(-50%,-50%,0) rotate(-270deg) translateY(-50%);
         }
@@ -221,7 +244,6 @@ export default class WidgetEmbed extends EventTarget {
           right: 0;
           transform: translate3d(50%,-50%,0) rotate(270deg) translateY(50%);
         }
-
         #ow_trigger.ow_show {
           transform: translate3d(50%,-50%,0) rotate(270deg) translateY(-50%);
         }
@@ -230,14 +252,14 @@ export default class WidgetEmbed extends EventTarget {
 
     if (direction === 'left') {
       styles += `
-        #ow_container {
-          transform: translateX(-120%);
-        }
-
-
         @media (min-width: 576px) {
           #ow_container {
-            left: 20px;
+            left: 0;
+            transform: translate(-120%, -50%);
+          }
+
+          #ow_container.ow_show {
+            transform: translate(20px, -50%);
           }
         }
       `;
@@ -245,14 +267,14 @@ export default class WidgetEmbed extends EventTarget {
 
     if (direction === 'right') {
       styles += `
-        #ow_container {
-          transform: translateX(120%);
-        }
-
-
         @media (min-width: 576px) {
           #ow_container {
-            right: 20px;
+            right: 0;
+            transform: translate(120%, -50%);
+          }
+
+          #ow_container.ow_show {
+            transform: translate(-20px, -50%);
           }
         }
       `;
@@ -261,10 +283,8 @@ export default class WidgetEmbed extends EventTarget {
     if (direction === 'center') {
       styles += `
         @media (min-width: 576px) {
-          #ow_container,
-          #ow_container.ow_show {
+          #ow_container {
             left: 50%;
-            top: 50%;
             transform: translate(-50%, -50%);
           }
         }
@@ -273,11 +293,12 @@ export default class WidgetEmbed extends EventTarget {
 
     style.innerText = styles.trim().replace(/(\r\n|\n|\r)/gm, '');
     document.head.append(style);
+
+    this.customStylesheet = style;
   }
 
   setup() {
-    this.setupStylesheet();
-    this.setupWidget();
+    this.setupCustomStyle();
 
     if (!this.options.customTrigger) {
       this.setupTrigger();
@@ -285,6 +306,36 @@ export default class WidgetEmbed extends EventTarget {
       if (!this.options.hideBadge) {
         this.setupBadge();
       }
+    }
+  }
+
+  destroy() {
+    this.container?.remove();
+    this.stylesheet?.remove();
+    this.customStylesheet?.remove();
+    this.trigger?.remove();
+    this.badge?.remove();
+  }
+
+  update(options?: WidgetOptions) {
+    if (options) {
+      this.options = options;
+    }
+
+    this.customStylesheet?.remove();
+    this.trigger?.remove();
+    this.badge?.remove();
+
+    this.setup();
+  }
+
+  async reload(options: WidgetOptions) {
+    try {
+      this.options = options;
+      this.data = await this.fetchData();
+      this.update();
+    } catch (err) {
+      console.error('[ONSET] - Something went wrong.', err);
     }
   }
 
