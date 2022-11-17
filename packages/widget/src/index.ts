@@ -184,7 +184,7 @@ export default class Widget extends EventTarget {
       ...options,
     };
 
-    this.#embed.update(options);
+    this.#embed.update(this.options);
     this.#triggerEvent('update', this.options);
   }
 }
