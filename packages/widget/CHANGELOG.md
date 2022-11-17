@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.1.2
+
+### Patch Changes
+
+- Fixed the trigger on update
+
 ## 0.1.1
 
 ### Patch Changes
