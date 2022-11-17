@@ -315,6 +315,7 @@ export default class WidgetEmbed extends EventTarget {
     this.customStylesheet?.remove();
     this.trigger?.remove();
     this.badge?.remove();
+    this.isReady = false;
   }
 
   update(options?: WidgetOptions) {
@@ -331,17 +332,13 @@ export default class WidgetEmbed extends EventTarget {
 
   async reload(options: WidgetOptions) {
     try {
+      this.isReady = false;
       this.options = options;
       this.data = await this.fetchData();
       this.update();
     } catch (err) {
       console.error('[ONSET] - Something went wrong.', err);
     }
-  }
-
-  onReady(releases: any[]) {
-    this.isReady = true;
-    this.instance.onReady(releases);
   }
 
   onNewRelease(releases: any[]) {

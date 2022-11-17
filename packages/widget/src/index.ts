@@ -102,6 +102,7 @@ export default class Widget extends EventTarget {
   }
 
   onReady(releases: any[] = []) {
+    this.#embed.isReady = true;
     this.#triggerEvent('ready', { releases });
 
     if (this.options.showOnLoad) {

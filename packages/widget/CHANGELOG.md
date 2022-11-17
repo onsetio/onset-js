@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.1.3
+
+### Patch Changes
+
+- Fixed the onReady
+
 ## 0.1.2
 
 ### Patch Changes
