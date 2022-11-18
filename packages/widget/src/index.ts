@@ -20,11 +20,6 @@ export interface WidgetOptions {
   allowSubscribers?: boolean;
 }
 
-export type WidgetUpdateOptions = Pick<
-  WidgetOptions,
-  'title' | 'theme' | 'project' | 'allowSubscribers'
->;
-
 export default class Widget extends EventTarget {
   options!: WidgetOptions;
   #embed!: WidgetEmbed;

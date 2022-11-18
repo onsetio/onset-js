@@ -137,6 +137,7 @@ export default class WidgetEmbed extends EventTarget {
 
     let styles = `
       #ow_container {
+        top: 0;
         opacity: 0;
         width: 100%;
         height: 100%;
@@ -206,9 +207,9 @@ export default class WidgetEmbed extends EventTarget {
     const width = this.options.width || '400px';
     const height = this.options.height || '95%';
     const colorYiq =
-      this.options.triggerTextColor ?? organization.color_yiq ?? '#FFFFFF';
+      this.options.triggerTextColor ?? organization?.color_yiq ?? '#FFFFFF';
     const color =
-      this.options.triggerBgColor ?? organization.color ?? '#3e45eb';
+      this.options.triggerBgColor ?? organization?.color ?? '#3e45eb';
     const direction = this.options.direction ?? 'right';
     const triggerDirection = this.options.triggerDirection || direction;
 
