@@ -83,7 +83,7 @@ export default class Widget extends EventTarget {
     }
 
     return this.#allRoadmap.filter(
-      ({ project }) => project.slug === this.options.project
+      ({ project }) => project?.slug === this.options.project
     );
   }
 
@@ -97,7 +97,7 @@ export default class Widget extends EventTarget {
     }
 
     return this.#allReleases.filter(
-      ({ project }) => project.slug === this.options.project
+      ({ project }) => project?.slug === this.options.project
     );
   }
 
