@@ -5,7 +5,7 @@
 # Official Onset SDK for Widget Embed
 
 [![npm version](https://img.shields.io/npm/v/@onsetio/widget.svg)](https://www.npmjs.com/package/@onsetio/widget)
-[![Documentation](https://img.shields.io/badge/documentation-onset.io-green.svg)](https://docs.onset.io/widget/)
+[![Documentation](https://img.shields.io/badge/documentation-onset.io-green.svg)](https://docs.onset.io/developers/webhooks)
 
 We recommend that you should always be loaded the Widget.js script directly from https://widget.onset.io/widget.js, rather than including it in a bundle or host yourself. If must bundle the Widget code into your application, you can use this package.
 

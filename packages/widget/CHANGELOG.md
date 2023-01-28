@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.2.0
+
+### Minor Changes
+
+- New `loaded` and `new_release` events and bug fixes.
+
 ## 0.1.4
 
 ### Patch Changes

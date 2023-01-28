@@ -4,6 +4,8 @@ import { getCookie, setCookie } from './utils/cookie';
 export interface WidgetOptions {
   page: string;
   title: string;
+  color?: string;
+  colorYiq?: string;
   triggerTextColor?: string;
   triggerText: string;
   triggerBgColor?: string;
@@ -13,17 +15,34 @@ export interface WidgetOptions {
   showRoadmap?: boolean;
   direction?: 'left' | 'right' | 'center';
   triggerDirection?: 'left' | 'right';
-  theme?: 'light' | 'dark' | 'system';
+  theme?: 'light' | 'dark' | 'auto';
   width?: string;
   height?: string;
   hideBadge?: boolean;
+  hideProjects?: boolean;
   allowSubscribers?: boolean;
 }
+
+const DEFAULT_OPTIONS: Partial<WidgetOptions> = {
+  triggerText: 'Release Notes',
+  width: '400px',
+  height: '95%',
+  triggerTextColor: '#FFFFFF',
+  triggerBgColor: '#3e45eb',
+  direction: 'right',
+  customTrigger: false,
+  hideBadge: false,
+  theme: 'auto',
+  showOnLoad: false,
+  showRoadmap: false,
+  hideProjects: false,
+};
 
 export default class Widget extends EventTarget {
   options!: WidgetOptions;
   #embed!: WidgetEmbed;
-  #releases?: any[];
+  #allReleases?: any[];
+  #allRoadmap?: any[];
 
   constructor(options: WidgetOptions) {
     super();
@@ -32,8 +51,8 @@ export default class Widget extends EventTarget {
       throw new Error('[ONSET] - Page slug is not defined.');
     }
 
-    this.options = options;
-    this.#embed = new WidgetEmbed(options, this);
+    this.options = Object.assign(DEFAULT_OPTIONS, options);
+    this.#embed = new WidgetEmbed(this.options, this);
   }
 
   #triggerEvent(name: string, details: any = {}) {
@@ -54,22 +73,43 @@ export default class Widget extends EventTarget {
     } as EventListenerOrEventListenerObject;
   }
 
-  get #newReleaseCount() {
+  get #roadmap() {
+    if (!this.#allRoadmap) {
+      return [];
+    }
+
+    if (!this.options.project) {
+      return this.#allRoadmap;
+    }
+
+    return this.#allRoadmap.filter(
+      ({ project }) => project.slug === this.options.project
+    );
+  }
+
+  get #releases() {
+    if (!this.#allReleases) {
+      return [];
+    }
+
+    if (!this.options.project) {
+      return this.#allReleases;
+    }
+
+    return this.#allReleases.filter(
+      ({ project }) => project.slug === this.options.project
+    );
+  }
+
+  get #newReleases() {
     const latestSeen = getCookie('onset:latest');
 
     if (!latestSeen) {
-      return 0;
+      return [];
     }
 
-    let releases = this.#releases || [];
-
-    if (this.options.project) {
-      releases = releases.filter(
-        ({ project }) => project.slug === this.options.project
-      );
-    }
-
-    return releases.findIndex(({ id }) => id === latestSeen);
+    const newIndex = this.#releases.findIndex(({ id }) => id === latestSeen);
+    return this.#releases.slice(0, newIndex);
   }
 
   get isReady() {
@@ -96,30 +136,43 @@ export default class Widget extends EventTarget {
     this.removeEventListener(name, this.#eventHandler(fn));
   }
 
-  onReady(releases: any[] = []) {
+  onReady() {
     this.#embed.isReady = true;
-    this.#triggerEvent('ready', { releases });
+    this.#triggerEvent('ready');
 
     if (this.options.showOnLoad) {
       this.show();
     } else if (!this.options.customTrigger) {
       this.#embed.showTrigger();
-      this.onNewRelease(releases);
     }
   }
 
-  onNewRelease(releases: any[] = []) {
-    this.#releases = releases;
-    const releaseCount = this.#newReleaseCount;
+  onLoad(data: { releases: any[]; projects: any[]; roadmap: any[] }) {
+    this.#allReleases = data.releases;
+    this.#allRoadmap = data.roadmap;
 
-    if (!this.options.hideBadge && releaseCount > 0) {
-      this.#triggerEvent('new_release', { count: releaseCount });
-      this.#embed.showBadge(releaseCount.toString());
+    this.#triggerEvent('loaded', {
+      roadmap: this.#roadmap,
+      releases: this.#releases,
+    });
+
+    this.#onNewRelease();
+  }
+
+  #onNewRelease() {
+    const releases = this.#newReleases;
+
+    if (releases.length) {
+      this.#triggerEvent('new_release', { releases });
+
+      if (!this.options.customTrigger && !this.options.hideBadge) {
+        this.#embed.showBadge(releases.length.toString());
+      }
     }
   }
 
   #markAsRead() {
-    if (this.#releases) {
+    if (this.#releases.length) {
       setCookie('onset:latest', this.#releases[0].id);
       this.#triggerEvent('read');
     }
@@ -163,9 +216,9 @@ export default class Widget extends EventTarget {
       throw new Error('[ONSET] - Page slug is not defined.');
     }
 
-    this.options = options;
-    this.#embed.reload(options);
-    this.#triggerEvent('reload', options);
+    this.options = Object.assign(DEFAULT_OPTIONS, options);
+    this.#embed.reload(this.options);
+    this.#triggerEvent('reload', this.options);
   }
 
   update(options: WidgetOptions) {
@@ -175,15 +228,11 @@ export default class Widget extends EventTarget {
       );
     }
 
-    this.options = {
-      ...this.options,
-      ...options,
-    };
-
+    this.options = Object.assign(this.options, options);
     this.#embed.update(this.options);
     this.#triggerEvent('update', this.options);
 
-    if (!this.options.customTrigger) {
+    if (!this.options.customTrigger && !this.isOpen) {
       this.#embed.showTrigger();
     }
   }

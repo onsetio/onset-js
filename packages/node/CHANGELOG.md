@@ -1,5 +1,13 @@
 # @onset/node
 
+## 0.1.1
+
+### Patch Changes
+
+- Added `roadmap` entity and release `append` method.
+- Updated dependencies
+  - interfaces@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

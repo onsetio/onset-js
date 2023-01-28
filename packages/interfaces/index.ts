@@ -36,7 +36,7 @@ export interface Label extends Base {
 }
 
 export interface ReleaseChange {
-  type: 'added' | 'changed' | 'deprecated' | 'fixed' | 'removed' | 'security';
+  type: string;
   description: string;
 }
 

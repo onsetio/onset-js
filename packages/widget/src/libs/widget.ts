@@ -108,7 +108,7 @@ export default class WidgetEmbed extends EventTarget {
   setupTrigger() {
     const trigger = document.createElement('div');
     trigger.id = 'ow_trigger';
-    trigger.innerText = this.options.triggerText || 'Release Notes';
+    trigger.innerText = this.options.triggerText;
 
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
@@ -204,13 +204,11 @@ export default class WidgetEmbed extends EventTarget {
     const style = document.createElement('style');
 
     const organization = this.data;
-    const width = this.options.width || '400px';
-    const height = this.options.height || '95%';
-    const colorYiq =
-      this.options.triggerTextColor ?? organization?.color_yiq ?? '#FFFFFF';
-    const color =
-      this.options.triggerBgColor ?? organization?.color ?? '#3e45eb';
-    const direction = this.options.direction ?? 'right';
+    const width = this.options.width;
+    const height = this.options.height;
+    const direction = this.options.direction;
+    const colorYiq = organization?.color_yiq ?? this.options.triggerTextColor;
+    const color = organization?.color ?? this.options.triggerBgColor;
     const triggerDirection = this.options.triggerDirection || direction;
 
     let styles = `
@@ -342,16 +340,20 @@ export default class WidgetEmbed extends EventTarget {
     }
   }
 
-  onNewRelease(releases: any[]) {
-    this.instance.onNewRelease(releases);
-  }
-
   showContainer() {
+    if (!this.container) {
+      return;
+    }
+
     this.isOpen = true;
     this.container.classList.add('ow_show');
   }
 
   hideContainer() {
+    if (!this.container) {
+      return;
+    }
+
     this.isOpen = false;
     this.container.classList.remove('ow_show');
   }

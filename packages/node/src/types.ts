@@ -44,6 +44,9 @@ export interface ReleaseBody
     | 'change_list_html'
   > {}
 
+export interface ReleaseAppendBody
+  extends Pick<Release, 'description' | 'change_list'> {}
+
 export interface ReleasePublishBody {
   email?: boolean;
   integrations?: string[];

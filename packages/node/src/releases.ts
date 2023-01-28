@@ -1,6 +1,11 @@
 import type { AxiosInstance } from 'axios';
 import type { Release } from 'interfaces';
-import type { Query, ReleaseBody, ReleasePublishBody } from './types';
+import type {
+  Query,
+  ReleaseBody,
+  ReleaseAppendBody,
+  ReleasePublishBody,
+} from './types';
 
 export class Releases {
   private client: AxiosInstance;
@@ -44,6 +49,13 @@ export class Releases {
   }
 
   async revert(id: string): Promise<Release> {
+    const { data } = await this.client.post<Release>(
+      `${this.path}/${id}/revert`
+    );
+    return data;
+  }
+
+  async append(id: string, body: ReleaseAppendBody): Promise<Release> {
     const { data } = await this.client.post<Release>(
       `${this.path}/${id}/revert`
     );

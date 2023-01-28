@@ -5,6 +5,7 @@ import { Labels } from './labels';
 import { Projects } from './projects';
 import { Releases } from './releases';
 import { Subscribers } from './subscribers';
+import { Roadmap } from './roadmap';
 
 export default class OnsetAPI {
   protected version = 'v1';
@@ -42,5 +43,9 @@ export default class OnsetAPI {
 
   get labels() {
     return new Labels(this.client);
+  }
+
+  get roadmap() {
+    return new Roadmap(this.client);
   }
 }
