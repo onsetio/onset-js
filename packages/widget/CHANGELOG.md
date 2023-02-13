@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 0.2.2
+
+### Patch Changes
+
+- Fixed the event function callback type
+
 ## 0.2.1
 
 ### Patch Changes

@@ -67,7 +67,7 @@ export default class Widget extends EventTarget {
     this.dispatchEvent(event);
   }
 
-  #eventHandler(fn: (arg: any) => void) {
+  #eventHandler(fn: (...args: any[]) => void) {
     return function hanlder({ type, detail }: any) {
       fn.call(null, { ...detail, type });
     } as EventListenerOrEventListenerObject;
@@ -120,7 +120,7 @@ export default class Widget extends EventTarget {
     return this.#embed.isOpen;
   }
 
-  on(name: string, fn: () => void) {
+  on(name: string, fn: (...args: any[]) => void) {
     if (typeof fn !== 'function') {
       throw new Error('[ONSET] - Event callback must be a function.');
     }
@@ -128,7 +128,7 @@ export default class Widget extends EventTarget {
     this.addEventListener(name, this.#eventHandler(fn));
   }
 
-  off(name: string, fn: () => void) {
+  off(name: string, fn: (...args: any[]) => void) {
     if (typeof fn !== 'function') {
       throw new Error('[ONSET] - Event callback must be a function.');
     }
