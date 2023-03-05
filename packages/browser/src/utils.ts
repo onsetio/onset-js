@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { Label, Organization, Project, Release, Feature } from './interfaces';
+import { Label, Organization, Project, Release, Roadmap } from './interfaces';
 
 export async function fetchData(page: string) {
   const { data: releases } = await axios.get<Release[]>(
     `https://${page}/releases.json`
   );
 
-  const { data: roadmap } = await axios.get<Feature[]>(
+  const { data: roadmap } = await axios.get<Roadmap[]>(
     `https://${page}/roadmap.json`
   );
 
@@ -14,8 +14,8 @@ export async function fetchData(page: string) {
     `https://${page}/data.json`
   );
 
-  const projects = new Map<string, Project>();
   const labels = new Map<string, Label>();
+  const projects = new Map<string, Project>();
 
   releases.forEach((release) => {
     if (release.project) {
@@ -25,12 +25,12 @@ export async function fetchData(page: string) {
     release.labels.forEach((label) => labels.set(label.slug, label));
   });
 
-  roadmap.forEach((feature) => {
-    if (feature.project) {
-      projects.set(feature.project.slug, feature.project);
+  roadmap.forEach((roadmap) => {
+    if (roadmap.project) {
+      projects.set(roadmap.project.slug, roadmap.project);
     }
 
-    feature.labels.forEach((label) => labels.set(label.slug, label));
+    roadmap.labels.forEach((label) => labels.set(label.slug, label));
   });
 
   return {

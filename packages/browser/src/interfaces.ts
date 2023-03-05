@@ -9,42 +9,19 @@ export interface SocialLink {
   linkedin?: string;
 }
 
-export type ReleaseChangeType =
-  | 'added'
-  | 'changed'
-  | 'deprecated'
-  | 'fixed'
-  | 'removed'
-  | 'security';
-
-export interface ReleaseChange {
-  type: ReleaseChangeType;
-  description: string;
-}
-
-export interface ReleaseAuthor {
-  name: string;
-  avatar: string;
-}
-
 export interface Organization {
   slug: string;
   name: string;
-
   url: string;
-  domain: string | null;
-  website: string | null;
-
-  color: string | null;
+  domain?: string;
+  website?: string;
+  color?: string;
   color_yiq: string;
-
   icon: string;
   logo: string;
   logo_dark: string;
-
   social_links: SocialLink;
   external_links: ExternalLink[];
-
   allow_subscribers: boolean;
   has_releases: boolean;
   has_roadmap: boolean;
@@ -63,46 +40,81 @@ export interface Label {
   url: string;
 }
 
+export interface Attachment<T = any> {
+  content: T;
+  type: 'relation' | 'link' | 'file';
+}
+
+export interface ReleaseChange {
+  type: string;
+  color?: string;
+  title?: string;
+  description: string;
+}
+
+export interface ReleaseAuthor {
+  name: string;
+  avatar_text: string;
+  avatar_image: string;
+  avatar_color: string;
+}
+
 export interface Release {
   id: string;
+  url: string;
   slug: string;
   title: string;
   is_pinned: boolean;
   version: string;
   description: string;
+  description_text: string;
   hero_image: string;
-
   released_at: string;
-  released_date: string;
-  released_month: string;
-
-  change_count: number;
   change_list: ReleaseChange[];
-
-  url: string;
-
   labels: Label[];
   project?: Project;
   author?: ReleaseAuthor;
+  attachments: Attachment<Omit<Roadmap, 'attachments'> | any>[];
 }
 
-export interface Feature {
+export type RoadmapStatus =
+  | 'in-progress'
+  | 'planned'
+  | 'paused'
+  | 'testing'
+  | 'alpha'
+  | 'beta'
+  | 'released'
+  | 'pending'
+  | 'backlog'
+  | 'canceled';
+
+export interface RoadmapUpdate {
+  description?: string;
+  status: RoadmapStatus;
+  created_at: string;
+  released_at?: string;
+  progress: number;
+}
+
+export interface Roadmap {
   id: string;
   slug: string;
   title: string;
+  rank: number;
   votes: number;
   status: string;
   progress: number;
   description: string;
-
   created_at: string;
-  created_date: string;
-
   released_at: string;
-  released_date: string;
-
   url: string;
-
   labels: Label[];
   project?: Project;
+  attachments: Attachment<Omit<Release, 'attachments'> | any>[];
 }
+
+/**
+ * @deprecated Feature type is deprecated use Roadmap instead.
+ */
+export interface Feature extends Roadmap {}
