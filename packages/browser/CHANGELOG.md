@@ -1,5 +1,13 @@
 # @onset/browser
 
+## 0.1.1
+
+### Patch Changes
+
+- Added roadmap updates
+- Updated dependencies
+  - interfaces@0.1.2
+
 ## 0.1.0
 
 ### Minor Changes

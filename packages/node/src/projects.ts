@@ -1,6 +1,12 @@
 import type { AxiosInstance } from 'axios';
-import type { Feature, Integration, Project, Release } from 'interfaces';
-import type { Query, ProjectBody } from './types';
+import type { Roadmap, Integration, Project, Release } from 'interfaces';
+
+type Payload = Omit<Project, 'id'>;
+
+type Query = Partial<{
+  offset: number;
+  limit: number;
+}>;
 
 export class Projects {
   private client: AxiosInstance;
@@ -15,12 +21,12 @@ export class Projects {
     return data;
   }
 
-  async create(body: ProjectBody): Promise<Project> {
+  async create(body: Payload): Promise<Project> {
     const { data } = await this.client.post<Project>(this.path, body);
     return data;
   }
 
-  async update(id: string, body: ProjectBody): Promise<Project> {
+  async update(id: string, body: Payload): Promise<Project> {
     const { data } = await this.client.patch<Project>(
       `${this.path}/${id}`,
       body
@@ -47,8 +53,8 @@ export class Projects {
     return data;
   }
 
-  async roadmap(id: string): Promise<Feature[]> {
-    const { data } = await this.client.get<Feature[]>(
+  async roadmap(id: string): Promise<Roadmap[]> {
+    const { data } = await this.client.get<Roadmap[]>(
       `${this.path}/${id}/roadmap`
     );
     return data;

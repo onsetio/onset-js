@@ -1,6 +1,26 @@
 import type { AxiosInstance } from 'axios';
-import type { Feature } from 'interfaces';
-import type { Query, FeatureBody } from './types';
+import type { Roadmap as IRoadmap } from 'interfaces';
+import { RoadmapUpdates } from './roadmap_updates';
+
+type Payload = Pick<
+  IRoadmap,
+  | 'title'
+  | 'slug'
+  | 'status'
+  | 'description'
+  | 'progress'
+  | 'is_public'
+  | 'label_ids'
+  | 'project_id'
+  | 'released_at'
+>;
+
+type Query = Partial<
+  Pick<IRoadmap, 'slug' | 'status' | 'is_public' | 'project_id'> & {
+    offset: number;
+    limit: number;
+  }
+>;
 
 export class Roadmap {
   private client: AxiosInstance;
@@ -10,23 +30,23 @@ export class Roadmap {
     this.client = client;
   }
 
-  async list(params: Query = {}): Promise<Feature[]> {
-    const { data } = await this.client.get<Feature[]>(this.path, { params });
+  async list(params: Query = {}): Promise<IRoadmap[]> {
+    const { data } = await this.client.get<IRoadmap[]>(this.path, { params });
     return data;
   }
 
-  async create(body: FeatureBody): Promise<Feature> {
-    const { data } = await this.client.post<Feature>(this.path, body);
+  async create(body: Payload): Promise<IRoadmap> {
+    const { data } = await this.client.post<IRoadmap>(this.path, body);
     return data;
   }
 
-  async retrieve(id: string): Promise<Feature> {
-    const { data } = await this.client.get<Feature>(`${this.path}/${id}`);
+  async retrieve(id: string): Promise<IRoadmap> {
+    const { data } = await this.client.get<IRoadmap>(`${this.path}/${id}`);
     return data;
   }
 
-  async update(id: string, body: FeatureBody): Promise<Feature> {
-    const { data } = await this.client.patch<Feature>(
+  async update(id: string, body: Payload): Promise<IRoadmap> {
+    const { data } = await this.client.patch<IRoadmap>(
       `${this.path}/${id}`,
       body
     );
@@ -38,22 +58,28 @@ export class Roadmap {
     return data;
   }
 
-  async vote(id: string): Promise<Feature> {
-    const { data } = await this.client.post<Feature>(`${this.path}/${id}/vote`);
+  async vote(id: string): Promise<IRoadmap> {
+    const { data } = await this.client.post<IRoadmap>(
+      `${this.path}/${id}/vote`
+    );
     return data;
   }
 
-  async archive(id: string): Promise<Feature> {
-    const { data } = await this.client.post<Feature>(
+  async archive(id: string): Promise<IRoadmap> {
+    const { data } = await this.client.post<IRoadmap>(
       `${this.path}/${id}/archive`
     );
     return data;
   }
 
-  async unarchive(id: string): Promise<Feature> {
-    const { data } = await this.client.post<Feature>(
+  async unarchive(id: string): Promise<IRoadmap> {
+    const { data } = await this.client.post<IRoadmap>(
       `${this.path}/${id}/unarchive`
     );
     return data;
+  }
+
+  updates(id: string) {
+    return new RoadmapUpdates(this.client, id);
   }
 }

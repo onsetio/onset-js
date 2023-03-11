@@ -1,11 +1,35 @@
 import type { AxiosInstance } from 'axios';
 import type { Release } from 'interfaces';
-import type {
-  Query,
-  ReleaseBody,
-  ReleaseAppendBody,
-  ReleasePublishBody,
-} from './types';
+
+type Payload = Pick<
+  Release,
+  | 'title'
+  | 'slug'
+  | 'description'
+  | 'released_at'
+  | 'is_pinned'
+  | 'change_list'
+  | 'version'
+  | 'is_pre_release'
+  | 'pre_release_version'
+  | 'pre_release_status'
+  | 'project_id'
+  | 'label_ids'
+>;
+
+type AppendPayload = Pick<Payload, 'description' | 'change_list'>;
+
+type PublishPayload = {
+  email?: boolean;
+  integrations?: string[];
+};
+
+type Query = Partial<
+  Pick<Release, 'slug' | 'status' | 'is_public' | 'project_id'> & {
+    offset: number;
+    limit: number;
+  }
+>;
 
 export class Releases {
   private client: AxiosInstance;
@@ -25,12 +49,12 @@ export class Releases {
     return data;
   }
 
-  async create(body: ReleaseBody): Promise<Release> {
+  async create(body: Payload): Promise<Release> {
     const { data } = await this.client.post<Release>(this.path, body);
     return data;
   }
 
-  async update(id: string, body: ReleaseBody): Promise<Release> {
+  async update(id: string, body: Payload): Promise<Release> {
     const { data } = await this.client.put<Release>(`${this.path}/${id}`, body);
     return data;
   }
@@ -40,7 +64,7 @@ export class Releases {
     return data;
   }
 
-  async publish(id: string, body: ReleasePublishBody): Promise<Release> {
+  async publish(id: string, body: PublishPayload): Promise<Release> {
     const { data } = await this.client.post<Release>(
       `${this.path}/${id}/publish`,
       body
@@ -55,9 +79,10 @@ export class Releases {
     return data;
   }
 
-  async append(id: string, body: ReleaseAppendBody): Promise<Release> {
+  async append(id: string, body: AppendPayload): Promise<Release> {
     const { data } = await this.client.post<Release>(
-      `${this.path}/${id}/revert`
+      `${this.path}/${id}/append`,
+      body
     );
     return data;
   }

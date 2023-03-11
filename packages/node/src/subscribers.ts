@@ -1,10 +1,12 @@
 import type { AxiosInstance } from 'axios';
 import type { Subscriber } from 'interfaces';
-import type {
-  Query,
-  SubscriberUpdateBody,
-  SubscriberCreateBody,
-} from './types';
+
+type Payload = Pick<Subscriber, 'email' | 'is_public'>;
+
+type Query = Partial<{
+  offset: number;
+  limit: number;
+}>;
 
 export class Subscribers {
   private client: AxiosInstance;
@@ -19,7 +21,7 @@ export class Subscribers {
     return data;
   }
 
-  async create(body: SubscriberCreateBody): Promise<Subscriber> {
+  async create(body: Payload): Promise<Subscriber> {
     const { data } = await this.client.post(this.path, body);
     return data;
   }
@@ -29,7 +31,7 @@ export class Subscribers {
     return data;
   }
 
-  async update(id: string, body: SubscriberUpdateBody): Promise<Subscriber> {
+  async update(id: string, body: Payload): Promise<Subscriber> {
     const { data } = await this.client.put(`${this.path}/${id}`, body);
     return data;
   }

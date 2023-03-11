@@ -1,5 +1,16 @@
 # @onset/node
 
+## 0.2.0
+
+### Minor Changes
+
+- Added roadmap updates
+
+### Patch Changes
+
+- Updated dependencies
+  - interfaces@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

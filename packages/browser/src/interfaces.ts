@@ -40,10 +40,32 @@ export interface Label {
   url: string;
 }
 
-export interface Attachment<T = any> {
+export interface AttachmentRelation<T> {
+  type: 'relation';
   content: T;
-  type: 'relation' | 'link' | 'file';
 }
+
+export interface AttachmentLink {
+  type: 'link';
+  content: {
+    title: string;
+    url: string;
+  };
+}
+
+export interface AttachmentFile {
+  type: 'file';
+  content: {
+    name: string;
+    size: number;
+    url: string;
+  };
+}
+
+export type Attachment<T> =
+  | AttachmentLink
+  | AttachmentFile
+  | AttachmentRelation<T>;
 
 export interface ReleaseChange {
   type: string;
@@ -74,7 +96,7 @@ export interface Release {
   labels: Label[];
   project?: Project;
   author?: ReleaseAuthor;
-  attachments: Attachment<Omit<Roadmap, 'attachments'> | any>[];
+  attachments: Attachment<Omit<Roadmap, 'attachments'>>[];
 }
 
 export type RoadmapStatus =
@@ -111,7 +133,7 @@ export interface Roadmap {
   url: string;
   labels: Label[];
   project?: Project;
-  attachments: Attachment<Omit<Release, 'attachments'> | any>[];
+  attachments: Attachment<Omit<Release, 'attachments'>>[];
 }
 
 /**
