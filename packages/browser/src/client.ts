@@ -16,14 +16,14 @@ export async function loadPage(page: string) {
 
       return data.labels.filter((label) => label.slug === slug);
     },
-    projects(slug: string) {
+    projects(slug?: string) {
       if (!slug) {
         return data.projects;
       }
 
       return data.projects.filter((project) => project.slug === slug);
     },
-    releases(project: string, slug?: string) {
+    releases(project?: string, slug?: string) {
       if (!project) {
         return data.releases;
       }
@@ -44,7 +44,7 @@ export async function loadPage(page: string) {
         return release.slug === slug;
       });
     },
-    roadmap(project: string, slug?: string) {
+    roadmap(project?: string, slug?: string) {
       if (!project) {
         return data.roadmap;
       }
