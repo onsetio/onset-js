@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 export default async function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const project = searchParams.get('project') ?? null;
+  const project = searchParams.get('project') ?? undefined;
 
   const page = await loadPage('releases.onset.io');
   const releases = page.releases(project);
