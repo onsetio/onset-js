@@ -1,5 +1,11 @@
 # @onset/browser
 
+## 0.1.2
+
+### Patch Changes
+
+- Fixed the project and release arguments
+
 ## 0.1.1
 
 ### Patch Changes
