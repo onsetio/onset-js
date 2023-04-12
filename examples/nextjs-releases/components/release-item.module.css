@@ -1,0 +1,33 @@
+.release {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  padding-bottom: 4rem;
+  border-bottom: 1px solid #E8E8E8;
+}
+
+.title {
+  font-size: 2.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.description p,
+.description h1,
+.description h2,
+.description h3,
+.description h4,
+.description img {
+  margin-bottom: 1rem;
+}
+
+.description img {
+  max-width: 100%;
+}
+
+.changes {
+  padding-left: 1rem;
+}
+
+.changes li {
+  margin-bottom: 1rem;
+}
