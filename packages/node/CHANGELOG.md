@@ -1,5 +1,16 @@
 # @onset/node
 
+## 1.0.0
+
+### Major Changes
+
+- Upgraded to new API version
+
+### Patch Changes
+
+- Updated dependencies
+  - interfaces@1.0.0
+
 ## 0.2.0
 
 ### Minor Changes

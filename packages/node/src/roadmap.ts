@@ -1,52 +1,52 @@
-import type { AxiosInstance } from 'axios';
-import type { Roadmap as IRoadmap } from 'interfaces';
-import { RoadmapUpdates } from './roadmap_updates';
+import type { AxiosInstance } from "axios";
+import type { Milestone } from "interfaces";
 
-type Payload = Pick<
-  IRoadmap,
-  | 'title'
-  | 'slug'
-  | 'status'
-  | 'description'
-  | 'progress'
-  | 'is_public'
-  | 'label_ids'
-  | 'project_id'
-  | 'released_at'
->;
+type Payload = {
+  title: string;
+  body: string;
+  is_public: boolean;
+  status: string;
+  stage: Milestone["stage"];
+  slug: string;
+  label_ids: string[];
+  project_id?: string;
+  attachments: Milestone["attachments"];
+};
 
-type Query = Partial<
-  Pick<IRoadmap, 'slug' | 'status' | 'is_public' | 'project_id'> & {
-    offset: number;
-    limit: number;
-  }
->;
+type Query = {
+  status?: string;
+  project_id?: string;
+  is_public?: boolean;
+  slug?: string;
+  offset?: number;
+  limit?: number;
+};
 
 export class Roadmap {
   private client: AxiosInstance;
-  private path = '/roadmap';
+  private path = "/roadmap";
 
   constructor(client: AxiosInstance) {
     this.client = client;
   }
 
-  async list(params: Query = {}): Promise<IRoadmap[]> {
-    const { data } = await this.client.get<IRoadmap[]>(this.path, { params });
+  async list(params: Query = {}): Promise<Milestone[]> {
+    const { data } = await this.client.get<Milestone[]>(this.path, { params });
     return data;
   }
 
-  async create(body: Payload): Promise<IRoadmap> {
-    const { data } = await this.client.post<IRoadmap>(this.path, body);
+  async create(body: Payload): Promise<Milestone> {
+    const { data } = await this.client.post<Milestone>(this.path, body);
     return data;
   }
 
-  async retrieve(id: string): Promise<IRoadmap> {
-    const { data } = await this.client.get<IRoadmap>(`${this.path}/${id}`);
+  async retrieve(id: string): Promise<Milestone> {
+    const { data } = await this.client.get<Milestone>(`${this.path}/${id}`);
     return data;
   }
 
-  async update(id: string, body: Payload): Promise<IRoadmap> {
-    const { data } = await this.client.patch<IRoadmap>(
+  async update(id: string, body: Payload): Promise<Milestone> {
+    const { data } = await this.client.patch<Milestone>(
       `${this.path}/${id}`,
       body
     );
@@ -56,30 +56,5 @@ export class Roadmap {
   async del(id: string): Promise<void> {
     const { data } = await this.client.delete(`${this.path}/${id}`);
     return data;
-  }
-
-  async vote(id: string): Promise<IRoadmap> {
-    const { data } = await this.client.post<IRoadmap>(
-      `${this.path}/${id}/vote`
-    );
-    return data;
-  }
-
-  async archive(id: string): Promise<IRoadmap> {
-    const { data } = await this.client.post<IRoadmap>(
-      `${this.path}/${id}/archive`
-    );
-    return data;
-  }
-
-  async unarchive(id: string): Promise<IRoadmap> {
-    const { data } = await this.client.post<IRoadmap>(
-      `${this.path}/${id}/unarchive`
-    );
-    return data;
-  }
-
-  updates(id: string) {
-    return new RoadmapUpdates(this.client, id);
   }
 }

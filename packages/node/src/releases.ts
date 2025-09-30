@@ -1,39 +1,35 @@
-import type { AxiosInstance } from 'axios';
-import type { Release } from 'interfaces';
+import type { AxiosInstance } from "axios";
+import type { Release } from "interfaces";
 
-type Payload = Pick<
-  Release,
-  | 'title'
-  | 'slug'
-  | 'description'
-  | 'released_at'
-  | 'is_pinned'
-  | 'change_list'
-  | 'version'
-  | 'is_pre_release'
-  | 'pre_release_version'
-  | 'pre_release_status'
-  | 'project_id'
-  | 'label_ids'
->;
-
-type AppendPayload = Pick<Payload, 'description' | 'change_list'>;
-
-type PublishPayload = {
-  email?: boolean;
-  integrations?: string[];
+type Payload = {
+  title: string;
+  body: string;
+  is_public: boolean;
+  status: Release["status"];
+  slug: string;
+  project_id?: string;
+  label_ids?: string[];
+  contributor_ids?: string[];
+  attachments?: Release["attachments"];
+  hero?: Release["hero"];
+  changes?: Release["changes"];
+  is_pinned?: boolean;
+  is_pre_release?: boolean;
+  version?: string;
 };
 
-type Query = Partial<
-  Pick<Release, 'slug' | 'status' | 'is_public' | 'project_id'> & {
-    offset: number;
-    limit: number;
-  }
->;
+type Query = {
+  offset?: number;
+  limit?: number;
+  slug?: string;
+  is_public?: boolean;
+  status?: Release["status"];
+  project_id?: string;
+};
 
 export class Releases {
   private client: AxiosInstance;
-  private path = '/releases';
+  private path = "/releases";
 
   constructor(client: AxiosInstance) {
     this.client = client;
@@ -61,29 +57,6 @@ export class Releases {
 
   async del(id: string): Promise<void> {
     const { data } = await this.client.delete(`${this.path}/${id}`);
-    return data;
-  }
-
-  async publish(id: string, body: PublishPayload): Promise<Release> {
-    const { data } = await this.client.post<Release>(
-      `${this.path}/${id}/publish`,
-      body
-    );
-    return data;
-  }
-
-  async revert(id: string): Promise<Release> {
-    const { data } = await this.client.post<Release>(
-      `${this.path}/${id}/revert`
-    );
-    return data;
-  }
-
-  async append(id: string, body: AppendPayload): Promise<Release> {
-    const { data } = await this.client.post<Release>(
-      `${this.path}/${id}/append`,
-      body
-    );
     return data;
   }
 }

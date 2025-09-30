@@ -1,7 +1,10 @@
 import type { AxiosInstance } from 'axios';
 import type { Subscriber } from 'interfaces';
 
-type Payload = Pick<Subscriber, 'email' | 'is_public'>;
+type Payload = {
+  email: string;
+  list_ids: string[];
+};
 
 type Query = Partial<{
   offset: number;

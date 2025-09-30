@@ -1,8 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-import { Organization } from './organization';
-import { Labels } from './labels';
-import { Projects } from './projects';
+import { Workspace } from './workspace';
 import { Releases } from './releases';
 import { Subscribers } from './subscribers';
 import { Roadmap } from './roadmap';
@@ -25,27 +23,19 @@ export default class OnsetAPI {
     });
   }
 
-  get organization() {
-    return new Organization(this.client);
-  }
-
-  get projects() {
-    return new Projects(this.client);
+  get workspace() {
+    return new Workspace(this.client);
   }
 
   get releases() {
     return new Releases(this.client);
   }
 
-  get subscribers() {
-    return new Subscribers(this.client);
-  }
-
-  get labels() {
-    return new Labels(this.client);
-  }
-
   get roadmap() {
     return new Roadmap(this.client);
+  }
+
+  get subscribers() {
+    return new Subscribers(this.client);
   }
 }
