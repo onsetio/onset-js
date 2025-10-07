@@ -1,10 +1,10 @@
-import type { AxiosInstance } from "axios";
 import type { Release } from "interfaces";
+import { Base } from "./base";
 
 type Payload = {
   title: string;
-  body: string;
-  is_public: boolean;
+  body?: string;
+  is_public?: boolean;
   status: Release["status"];
   slug: string;
   project_id?: string;
@@ -27,36 +27,6 @@ type Query = {
   project_id?: string;
 };
 
-export class Releases {
-  private client: AxiosInstance;
-  private path = "/releases";
-
-  constructor(client: AxiosInstance) {
-    this.client = client;
-  }
-
-  async list(params: Query = {}): Promise<Release[]> {
-    const { data } = await this.client.get<Release[]>(this.path, { params });
-    return data;
-  }
-
-  async retrieve(id: string): Promise<Release> {
-    const { data } = await this.client.get<Release>(`${this.path}/${id}`);
-    return data;
-  }
-
-  async create(body: Payload): Promise<Release> {
-    const { data } = await this.client.post<Release>(this.path, body);
-    return data;
-  }
-
-  async update(id: string, body: Payload): Promise<Release> {
-    const { data } = await this.client.put<Release>(`${this.path}/${id}`, body);
-    return data;
-  }
-
-  async del(id: string): Promise<void> {
-    const { data } = await this.client.delete(`${this.path}/${id}`);
-    return data;
-  }
+export class Releases extends Base<Release, Query, Payload> {
+  protected path = "/releases";
 }

@@ -1,5 +1,16 @@
 # @onset/node
 
+## 1.1.0
+
+### Minor Changes
+
+- added webhook
+
+### Patch Changes
+
+- Updated dependencies
+  - interfaces@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

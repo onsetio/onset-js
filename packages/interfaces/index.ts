@@ -7,7 +7,6 @@ export interface Workspace {
 export interface Subscriber {
   id: string;
   email: string;
-  is_public: boolean;
   lists: {
     id: string;
     name: string;
@@ -90,4 +89,12 @@ export interface Milestone {
   created_at: string;
   updated_at: string;
   attachments: (LinkAttachment | FileAttachment)[];
+}
+
+export interface Webhook {
+  id: string;
+  url: string;
+  events: Record<string, boolean>;
+  created_at: string;
+  updated_at: string;
 }

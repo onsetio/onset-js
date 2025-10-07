@@ -9,7 +9,10 @@
     "dev": "turbo run dev --parallel",
     "clean": "turbo run clean --parallel",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changelog": "npx @changesets/cli",
+    "changelog:version": "npx @changesets/cli version",
+    "changelog:publish": "turbo run build && npx @changesets/cli publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",

@@ -4,6 +4,7 @@ import { Workspace } from './workspace';
 import { Releases } from './releases';
 import { Subscribers } from './subscribers';
 import { Roadmap } from './roadmap';
+import { Webhooks } from './webhooks';
 
 export default class OnsetAPI {
   protected version = 'v1';
@@ -37,5 +38,9 @@ export default class OnsetAPI {
 
   get subscribers() {
     return new Subscribers(this.client);
+  }
+
+  get webhooks() {
+    return new Webhooks(this.client);
   }
 }
