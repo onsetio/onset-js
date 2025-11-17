@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.0
+
+### Major Changes
+
+- onset 5.0
+
 ## 0.2.2
 
 ### Patch Changes

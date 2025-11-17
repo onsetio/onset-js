@@ -1,4 +1,4 @@
-import type { Release } from "interfaces";
+import type { Release } from "./types";
 import { Base } from "./base";
 
 type Payload = {

@@ -1,5 +1,5 @@
-import type { Subscriber } from 'interfaces';
-import { Base } from './base';
+import type { Subscriber } from "./types";
+import { Base } from "./base";
 
 type Payload = {
   email: string;
@@ -12,5 +12,5 @@ type Query = Partial<{
 }>;
 
 export class Subscribers extends Base<Subscriber, Query, Payload> {
-  protected path = '/subscribers';
+  protected path = "/subscribers";
 }

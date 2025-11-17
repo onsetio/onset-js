@@ -1,5 +1,11 @@
 # @onset/browser
 
+## 1.0.0
+
+### Major Changes
+
+- onset 5.0
+
 ## 0.1.2
 
 ### Patch Changes

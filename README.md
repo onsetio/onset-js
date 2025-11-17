@@ -28,8 +28,8 @@ yarn add @onsetio/browser
 Setup and usage of these SDKs always follows the same principle.
 
 ```js
-import { loadPage } from '@onsetio/browser';
+import { loadPage } from "@onsetio/browser";
 
-const page = await loadPage('__PAGE_SLUG__');
+const page = await loadPage("__PAGE_SLUG__");
 const releases = page.releases();
 ```

@@ -21,10 +21,10 @@ yarn add @onsetio/widget
 Setup and usage of these SDKs always follows the same principle.
 
 ```js
-import Widget from '@onsetio/widget';
+import Widget from "@onsetio/widget";
 
 const widgetInstance = new Widget({
-  page: '__PAGE_HOST__',
+  page: "__PAGE_HOST__",
   // ...
 });
 ```
@@ -35,7 +35,7 @@ const widgetInstance = new Widget({
 <script>
   window.onsetWidgetSettings = {
     triggerText: "🔔 What's New",
-    page: '__PAGE_HOST__',
+    page: "__PAGE_HOST__",
     // ...
   };
 
@@ -44,10 +44,10 @@ const widgetInstance = new Widget({
     e.onsetWidget.on = function () {
       (e.onsetWidget.$ = e.onsetWidget.$ || []).push(arguments);
     };
-    var c = t.getElementsByTagName('script')[0],
-      i = t.createElement('script');
+    var c = t.getElementsByTagName("script")[0],
+      i = t.createElement("script");
     i.async = true;
-    i.src = 'https://widget.onset.io/widget.js';
+    i.src = "https://widget.onset.io/widget.js";
     c.parentNode.insertBefore(i, c);
   })(window, document);
 </script>

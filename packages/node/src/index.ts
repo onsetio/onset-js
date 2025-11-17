@@ -1,3 +1,2 @@
-export { default as default } from './api';
-
-export * from 'interfaces';
+export { default as default } from "./api";
+export * from "./types";

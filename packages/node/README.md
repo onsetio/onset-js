@@ -21,8 +21,8 @@ yarn add @onsetio/node
 Setup and usage of these SDKs always follows the same principle.
 
 ```js
-import OnsetAPI from '@onsetio/node';
+import OnsetAPI from "@onsetio/node";
 
-const onsetSDK = new OnsetAPI('__API_KEY__');
+const onsetSDK = new OnsetAPI("__API_KEY__");
 const releases = onsetSDK.releases.list();
 ```

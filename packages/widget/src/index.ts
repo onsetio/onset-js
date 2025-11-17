@@ -1,239 +1,483 @@
-import WidgetEmbed from './libs/widget';
-import { getCookie, setCookie } from './utils/cookie';
+import { getCookie, setCookie } from "./utils";
 
-export interface WidgetOptions {
-  page: string;
-  title: string;
-  color?: string;
-  colorYiq?: string;
-  triggerTextColor?: string;
-  triggerText: string;
-  triggerBgColor?: string;
-  customTrigger?: boolean;
-  showOnLoad?: boolean;
-  project?: string;
-  showRoadmap?: boolean;
-  direction?: 'left' | 'right' | 'center';
-  triggerDirection?: 'left' | 'right';
-  theme?: 'light' | 'dark' | 'auto';
-  width?: string;
-  height?: string;
-  hideBadge?: boolean;
-  hideProjects?: boolean;
-  allowSubscribers?: boolean;
-}
-
-const DEFAULT_OPTIONS: Partial<WidgetOptions> = {
-  triggerText: 'Release Notes',
-  width: '400px',
-  height: '95%',
-  triggerTextColor: '#FFFFFF',
-  triggerBgColor: '#3e45eb',
-  direction: 'right',
-  customTrigger: false,
-  hideBadge: false,
-  theme: 'auto',
-  showOnLoad: false,
-  showRoadmap: false,
-  hideProjects: false,
+type QueueItem<T extends keyof OnsetWidget = keyof OnsetWidget> = {
+  type: T;
+  lifecycle: "ready" | "loaded";
+  payload?: Parameters<OnsetWidget[T]>[0];
 };
 
-export default class Widget extends EventTarget {
-  options!: WidgetOptions;
-  #embed!: WidgetEmbed;
-  #allReleases?: any[];
-  #allRoadmap?: any[];
+type Release = {
+  id: string;
+  url: string;
+  title: string;
+  released_at: string;
+  description: string;
+  description_text: string;
+};
 
-  constructor(options: WidgetOptions) {
-    super();
+export interface OnsetWidgetOptions {
+  slug?: string;
+  debug?: boolean;
+  title?: string;
+  theme?: "light" | "dark" | "system";
+  showLatestPopup?: boolean;
+  popupPosition?: "left" | "right";
+  widgetPosition?: "left" | "right" | "center";
+  callbacks?: {
+    onReady?: () => void;
+    onLoaded?: (releases: Release[]) => void;
+    onWidgetOpen?: () => void;
+    onWidgetClose?: () => void;
+  };
+}
 
-    if (!options.page) {
-      throw new Error('[ONSET] - Page slug is not defined.');
+const WIDGET_URL = "https://widget.onset.io";
+
+export class OnsetWidget {
+  private widget: HTMLIFrameElement | null = null;
+  private options: OnsetWidgetOptions;
+  private queue: QueueItem[] = [];
+  private isReady = false;
+  private isLoaded = false;
+  private releases: Release[] = [];
+
+  constructor(options: OnsetWidgetOptions = {}) {
+    if (!options.slug) {
+      throw new Error('OnsetWidget: "slug" option is required');
     }
 
-    this.options = Object.assign(DEFAULT_OPTIONS, options);
-    this.#embed = new WidgetEmbed(this.options, this);
+    this.options = {
+      debug: false,
+      theme: "system",
+      widgetPosition: "right",
+      showLatestPopup: true,
+      popupPosition: "right",
+      ...options,
+    };
+
+    this.log("Initializing widget with options:", options);
+    this.mountWidget();
+    this.addEventListener();
+    this.showLatestReleasePopup();
   }
 
-  #triggerEvent(name: string, details: any = {}) {
-    const event = new CustomEvent(name, {
-      detail: {
-        ...details,
-        isOpen: this.isOpen,
-        isReady: this.isReady,
-      },
-    });
-
-    this.dispatchEvent(event);
-  }
-
-  #eventHandler(fn: (...args: any[]) => void) {
-    return function hanlder({ type, detail }: any) {
-      fn.call(null, { ...detail, type });
-    } as EventListenerOrEventListenerObject;
-  }
-
-  get #roadmap() {
-    if (!this.#allRoadmap) {
-      return [];
+  private log(message: string, ...optionalParams: unknown[]) {
+    if (!this.options.debug) {
+      return;
     }
 
-    if (!this.options.project) {
-      return this.#allRoadmap;
-    }
-
-    return this.#allRoadmap.filter(
-      ({ project }) => project?.slug === this.options.project
+    console.log(
+      "%c[Onset Widget]",
+      "color: #608b4e;",
+      message,
+      ...optionalParams
     );
   }
 
-  get #releases() {
-    if (!this.#allReleases) {
-      return [];
-    }
+  private mountWidget() {
+    this.log("Mounting the widget...");
 
-    if (!this.options.project) {
-      return this.#allReleases;
-    }
+    const container = document.createElement("div");
+    container.id = "ow_container";
 
-    return this.#allReleases.filter(
-      ({ project }) => project?.slug === this.options.project
-    );
-  }
+    const iframe = document.createElement("iframe");
+    iframe.id = "ow_iframe";
+    iframe.style.transition = "all 0.3s ease-in-out";
+    iframe.style.border = "none";
+    iframe.style.position = "fixed";
+    iframe.style.bottom = "10px";
+    iframe.style.zIndex = "999999";
+    iframe.style.opacity = "0";
 
-  get #newReleases() {
-    const latestSeen = getCookie('onset:latest');
+    const base = document.createElement("base");
+    base.target = "_blank";
 
-    if (!latestSeen) {
-      return [];
-    }
+    const script = document.createElement("script");
+    script.src = `${WIDGET_URL}/assets/widget.js`;
+    script.async = true;
+    script.type = "module";
 
-    const newIndex = this.#releases.findIndex(({ id }) => id === latestSeen);
-    return this.#releases.slice(0, newIndex);
-  }
+    const style = document.createElement("link");
+    style.href = `${WIDGET_URL}/assets/widget.css`;
+    style.rel = "stylesheet";
 
-  get isReady() {
-    return this.#embed.isReady;
-  }
+    // root div
+    const root = document.createElement("div");
+    root.id = "root";
 
-  get isOpen() {
-    return this.#embed.isOpen;
-  }
-
-  on(name: string, fn: (...args: any[]) => void) {
-    if (typeof fn !== 'function') {
-      throw new Error('[ONSET] - Event callback must be a function.');
-    }
-
-    this.addEventListener(name, this.#eventHandler(fn));
-  }
-
-  off(name: string, fn: (...args: any[]) => void) {
-    if (typeof fn !== 'function') {
-      throw new Error('[ONSET] - Event callback must be a function.');
-    }
-
-    this.removeEventListener(name, this.#eventHandler(fn));
-  }
-
-  onReady() {
-    this.#embed.isReady = true;
-    this.#triggerEvent('ready');
-
-    if (this.options.showOnLoad) {
-      this.show();
-    } else if (!this.options.customTrigger) {
-      this.#embed.showTrigger();
-    }
-  }
-
-  onLoad(data: { releases: any[]; projects: any[]; roadmap: any[] }) {
-    this.#allReleases = data.releases;
-    this.#allRoadmap = data.roadmap;
-
-    this.#triggerEvent('loaded', {
-      roadmap: this.#roadmap,
-      releases: this.#releases,
+    iframe.addEventListener("load", () => {
+      iframe.contentDocument?.head.append(base);
+      iframe.contentDocument?.head.append(style);
+      iframe.contentDocument?.body.append(root);
+      iframe.contentDocument?.body.append(script);
     });
 
-    this.#onNewRelease();
+    this.widget = iframe;
+
+    container.append(iframe);
+    document.body.append(container);
+    this.log("Widget mounted");
   }
 
-  #onNewRelease() {
-    const releases = this.#newReleases;
+  private addEventListener() {
+    this.log("Adding event listeners...");
 
-    if (releases.length) {
-      this.#triggerEvent('new_release', { releases });
+    window.addEventListener("message", (event) => {
+      if (event.data?.source !== "onset") {
+        return;
+      }
 
-      if (!this.options.customTrigger && !this.options.hideBadge) {
-        this.#embed.showBadge(releases.length.toString());
+      this.log("Received message from widget:", event.data);
+
+      switch (event.data.type) {
+        case "ready":
+          this.log("Widget is ready");
+          this.isReady = true;
+          this.postMessage({ type: "init", options: this.options });
+          this.options.callbacks?.onReady?.();
+          this.flushQueue("ready");
+          break;
+        case "loaded":
+          this.log("Widget has loaded");
+          this.isLoaded = true;
+          this.releases = event.data.releases;
+          this.options.callbacks?.onLoaded?.(this.releases);
+          this.flushQueue("loaded");
+          break;
+        case "openWidget":
+          this.openWidget();
+          break;
+        case "closeWidget":
+          this.closeWidget();
+          break;
+        case "closePopup":
+          this.closePopup();
+          break;
+        case "expandPopup":
+          this.expandPopup();
+          break;
+        case "collapsePopup":
+          this.collapsePopup();
+          break;
+        case "resizePopup":
+          this.resizePopup(event.data.size);
+          break;
+      }
+    });
+  }
+
+  private postMessage(data: Record<string, unknown>) {
+    this.log("Posting message to widget:", data);
+    this.widget?.contentWindow?.postMessage({ source: "onset", ...data }, "*");
+  }
+
+  private flushQueue(lifecycle: "ready" | "loaded") {
+    this.log("Flushing queue...");
+
+    this.queue.forEach((item) => {
+      if (item.lifecycle !== lifecycle) {
+        return;
+      }
+
+      this[item.type].call(this, item.payload as never);
+      this.log("Flushed item from queue:", item);
+    });
+
+    this.queue = this.queue.filter((item) => item.lifecycle !== lifecycle);
+  }
+
+  private expandPopup() {
+    if (!this.widget) {
+      this.log("Widget not mounted, not expanding popup");
+      return;
+    }
+
+    this.widget.style.height = "calc(100vh - 20px)";
+    this.widget.style.opacity = "1";
+
+    this.widget.style.left = "unset";
+    this.widget.style.right = "unset";
+    this.widget.style.transform = "unset";
+    this.widget.style.width = "100%";
+
+    if (this.options.widgetPosition === "left") {
+      this.widget.style.maxWidth = "480px";
+
+      if (this.options.popupPosition === "left") {
+        this.widget.style.left = "10px";
+      } else {
+        this.widget.style.right = "100%";
+        this.widget.style.transform = "translateX(calc(100% + 10px))";
+      }
+    } else if (this.options.widgetPosition === "center") {
+      this.widget.style.maxWidth = "580px";
+
+      if (this.options.popupPosition === "left") {
+        this.widget.style.left = "50%";
+        this.widget.style.transform = "translateX(-50%)";
+      } else {
+        this.widget.style.right = "50%";
+        this.widget.style.transform = "translateX(50%)";
+      }
+    } else {
+      this.widget.style.maxWidth = "480px";
+
+      if (this.options.popupPosition === "left") {
+        this.widget.style.left = "100%";
+        this.widget.style.transform = "translateX(calc(-100% - 10px))";
+      } else {
+        this.widget.style.right = "10px";
       }
     }
+
+    this.postMessage({ type: "expandedPopup" });
   }
 
-  #markAsRead() {
-    if (this.#releases.length) {
-      setCookie('onset:latest', this.#releases[0].id);
-      this.#triggerEvent('read');
-    }
-  }
-
-  show() {
-    this.#embed.showContainer();
-
-    if (!this.options.customTrigger) {
-      this.#embed.hideTrigger();
+  private collapsePopup() {
+    if (!this.widget) {
+      this.log("Widget not mounted, not collapsing popup");
+      return;
     }
 
-    this.#triggerEvent('show');
+    this.widget.style.opacity = "1";
+    this.widget.style.height = "0px";
+    this.widget.style.transform = "unset";
+    this.widget.style.width = "100%";
+    this.widget.style.maxWidth = "360px";
+    this.widget.style.minWidth = "320px";
 
-    setTimeout(() => {
-      this.#embed.hideBadge();
-      this.#markAsRead();
-    }, 1000);
-  }
-
-  hide() {
-    this.#embed.hideContainer();
-
-    if (!this.options.customTrigger) {
-      this.#embed.showTrigger();
-    }
-
-    this.#triggerEvent('hide');
-  }
-
-  toggle() {
-    if (this.isOpen) {
-      this.hide();
+    if (this.options.popupPosition === "left") {
+      this.widget.style.left = "10px";
     } else {
-      this.show();
-    }
-  }
-
-  reload(options: WidgetOptions) {
-    if (!options.page) {
-      throw new Error('[ONSET] - Page slug is not defined.');
+      this.widget.style.right = "10px";
     }
 
-    this.options = Object.assign(DEFAULT_OPTIONS, options);
-    this.#embed.reload(this.options);
-    this.#triggerEvent('reload', this.options);
+    this.postMessage({ type: "collapsedPopup" });
   }
 
-  update(options: WidgetOptions) {
-    if (options.page && options.page !== this.options.page) {
+  private resizePopup(size: { width: number; height: number }) {
+    if (!this.widget) {
+      this.log("Widget not mounted, not resizing popup");
+      return;
+    }
+
+    this.widget.style.height = `${size.height}px`;
+
+    this.postMessage({ type: "resizedPopup", size });
+  }
+
+  private showLatestReleasePopup() {
+    if (!this.isLoaded) {
+      this.log("Widget not loaded, queuing showLatestReleasePopup");
+      this.queue.push({
+        type: "showLatestReleasePopup" as keyof OnsetWidget,
+        lifecycle: "loaded",
+      });
+      return;
+    }
+
+    if (!this.options.showLatestPopup) {
+      this.log("showLatestPopup option is disabled, not showing popup");
+      return;
+    }
+
+    if (!this.releases.length) {
+      this.log("No releases available, not showing popup");
+      return;
+    }
+
+    const latestRelease = this.releases[0];
+    const lastSeenReleaseIds = getCookie("onset:latest")?.split(",") || [];
+
+    if (lastSeenReleaseIds.includes(latestRelease.id as string)) {
+      this.log("Latest release already seen, not showing popup");
+      return;
+    }
+
+    lastSeenReleaseIds.push(latestRelease.id as string);
+
+    setCookie(
+      "onset:latest",
+      Array.from(new Set(lastSeenReleaseIds)).join(",")
+    );
+
+    this.openPopup(latestRelease.id as string);
+  }
+
+  /**
+   * Opens the release note popup with the given release ID.
+   * @param id Release ID to highlight specific release.
+   */
+  public openReleaseNote(id: string = "latest") {
+    if (!id) {
+      this.log("No release ID provided to openReleaseNote");
       throw new Error(
-        '[ONSET] - To change page slug use the .reload() method.'
+        'OnsetWidget: "id" parameter is required for openReleaseNote'
       );
     }
 
-    this.options = Object.assign(this.options, options);
-    this.#embed.update(this.options);
-    this.#triggerEvent('update', this.options);
-
-    if (!this.options.customTrigger && !this.isOpen) {
-      this.#embed.showTrigger();
+    if (!this.isLoaded) {
+      this.log("Widget not loaded, queuing openReleaseNote");
+      this.queue.push({
+        type: "openReleaseNote",
+        payload: id,
+        lifecycle: "loaded",
+      });
+      return;
     }
+
+    if (this.releases.length === 0) {
+      this.log("No releases available, not opening release note");
+      return;
+    }
+
+    this.openPopup(id);
+    this.expandPopup();
+  }
+
+  /**
+   * Opens the widget.
+   */
+  public openWidget() {
+    if (!this.isLoaded) {
+      this.log("Widget not ready, queuing openWidget");
+      this.queue.push({ type: "openWidget", lifecycle: "loaded" });
+      return;
+    }
+
+    if (!this.widget) {
+      this.log("Widget not mounted, not opening widget");
+      return;
+    }
+
+    this.widget.style.height = "calc(100vh - 20px)";
+    this.widget.style.left = "unset";
+    this.widget.style.right = "unset";
+    this.widget.style.transform = "unset";
+    this.widget.style.width = "100%";
+
+    if (this.options.widgetPosition === "left") {
+      this.widget.style.maxWidth = "480px";
+      this.widget.style.left = "10px";
+      this.widget.style.transform = "translateX(calc(-100% - 10px))";
+    } else if (this.options.widgetPosition === "center") {
+      this.widget.style.maxWidth = "580px";
+      this.widget.style.left = "50%";
+      this.widget.style.transform = "translateX(-50%)";
+    } else {
+      this.widget.style.maxWidth = "480px";
+      this.widget.style.right = "10px";
+      this.widget.style.transform = "translateX(calc(100% + 10px))";
+    }
+
+    this.widget.addEventListener(
+      "transitionend",
+      () => {
+        this.widget!.style.opacity = "1";
+
+        if (this.options.widgetPosition !== "center") {
+          this.widget!.style.transform = "translateX(0%)";
+        }
+
+        this.postMessage({ type: "openedWidget" });
+        this.options.callbacks?.onWidgetOpen?.();
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Closes the widget.
+   */
+  public closeWidget() {
+    if (!this.isReady) {
+      this.log("Widget not ready, queuing closeWidget");
+      this.queue.push({ type: "closeWidget", lifecycle: "ready" });
+      return;
+    }
+
+    if (!this.widget) {
+      this.log("Widget not mounted, not closing widget");
+      return;
+    }
+
+    this.widget!.style.opacity = "0";
+
+    if (this.options.widgetPosition === "left") {
+      this.widget!.style.transform = "translateX(calc(-100% - 10px))";
+    } else if (this.options.widgetPosition === "right") {
+      this.widget!.style.transform = "translateX(calc(100% + 10px))";
+    }
+
+    this.widget.addEventListener(
+      "transitionend",
+      () => {
+        this.postMessage({ type: "closedWidget" });
+        this.options.callbacks?.onWidgetClose?.();
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Opens the popup with the given release ID.
+   * @param id Release ID to highlight specific release.
+   */
+  public openPopup(id: string = "latest") {
+    if (!id) {
+      this.log("No release ID provided to openPopup");
+      throw new Error('OnsetWidget: "id" parameter is required for openPopup');
+    }
+
+    if (!this.isLoaded) {
+      this.log("Widget not loaded, queuing openPopup");
+      this.queue.push({ type: "openPopup", payload: id, lifecycle: "loaded" });
+      return;
+    }
+
+    if (!this.widget) {
+      this.log("Widget not mounted, not opening popup");
+      return;
+    }
+
+    this.widget.style.opacity = "1";
+    this.widget.style.width = "100%";
+    this.widget.style.maxWidth = "360px";
+    this.widget.style.minWidth = "320px";
+    this.widget.style.height = "0px";
+
+    if (this.options.popupPosition === "left") {
+      this.widget.style.left = "10px";
+    } else {
+      this.widget.style.right = "10px";
+    }
+
+    if (id === "latest") {
+      id = this.releases?.[0]?.id as string;
+    }
+
+    this.postMessage({ type: "openedPopup", releaseId: id });
+  }
+
+  /**
+   * Closes the popup.
+   */
+  public closePopup() {
+    if (!this.isReady) {
+      this.log("Widget not ready, queuing closePopup");
+      this.queue.push({ type: "closePopup", lifecycle: "ready" });
+      return;
+    }
+
+    if (!this.widget) {
+      this.log("Widget not mounted, not closing popup");
+      return;
+    }
+
+    this.widget.style.opacity = "0";
+    this.widget.style.width = "0";
+    this.widget.style.height = "0";
+
+    this.postMessage({ type: "closedPopup" });
   }
 }

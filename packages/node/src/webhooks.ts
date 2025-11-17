@@ -1,5 +1,5 @@
-import type { Webhook } from 'interfaces';
-import { Base } from './base';
+import type { Webhook } from "./types";
+import { Base } from "./base";
 
 type Payload = {
   title: string;
@@ -13,5 +13,5 @@ type Query = Partial<{
 }>;
 
 export class Webhooks extends Base<Webhook, Query, Payload> {
-  protected path = '/webhooks';
+  protected path = "/webhooks";
 }

@@ -18,13 +18,13 @@ export interface Subscriber {
 type Project = {
   id: string;
   name: string;
-}
+};
 
 type Label = {
   id: string;
   name: string;
   color: string;
-}
+};
 
 type LinkAttachment = {
   type: "link";
@@ -32,7 +32,7 @@ type LinkAttachment = {
     url: string;
     title: string;
   };
-}
+};
 
 type FileAttachment = {
   type: "file";

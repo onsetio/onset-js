@@ -1,2 +1,2 @@
-export { loadPage } from './client';
-export * from './interfaces';
+export { default as default } from "./api";
+export * from "./types";

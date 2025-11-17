@@ -1,20 +1,20 @@
-import { Inter } from 'next/font/google'
-import Header from '@/components/Header'
-import './globals.css'
+import { Inter } from "next/font/google";
+import Header from "@/components/Header";
+import "./globals.css";
 
 export const metadata = {
-  title: 'Latest Releases',
-  description: 'Latest releases of Onset projects',
-}
+  title: "Latest Releases",
+  description: "Latest releases of Onset projects",
+};
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ["latin"],
 });
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -23,5 +23,5 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }

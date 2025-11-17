@@ -1,19 +1,19 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from "axios";
 
-import { Workspace } from './workspace';
-import { Releases } from './releases';
-import { Subscribers } from './subscribers';
-import { Roadmap } from './roadmap';
-import { Webhooks } from './webhooks';
+import { Workspace } from "./workspace";
+import { Releases } from "./releases";
+import { Subscribers } from "./subscribers";
+import { Roadmap } from "./roadmap";
+import { Webhooks } from "./webhooks";
 
 export default class OnsetAPI {
-  protected version = 'v1';
-  private baseURL = 'https://api.onset.io';
+  protected version = "v1";
+  private baseURL = "https://api.onset.io";
   private client: AxiosInstance;
 
   constructor(apiKey: string) {
     if (!apiKey) {
-      throw new Error('[ONSET] - API Key is required.');
+      throw new Error("[ONSET] - API Key is required.");
     }
 
     this.client = axios.create({

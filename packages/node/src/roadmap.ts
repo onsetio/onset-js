@@ -1,4 +1,4 @@
-import type { Milestone } from "interfaces";
+import type { Milestone } from "./types";
 import { Base } from "./base";
 
 type Payload = {

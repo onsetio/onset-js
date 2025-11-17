@@ -1,9 +1,9 @@
-import type { AxiosInstance } from 'axios';
-import type { Workspace as WorkspaceResult } from 'interfaces';
+import type { AxiosInstance } from "axios";
+import type { Workspace as WorkspaceResult } from "./types";
 
 export class Workspace {
   private client: AxiosInstance;
-  private path = '/workspace';
+  private path = "/workspace";
 
   constructor(client: AxiosInstance) {
     this.client = client;

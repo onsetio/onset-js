@@ -1,5 +1,11 @@
 # @onset/node
 
+## 2.0.0
+
+### Major Changes
+
+- onset 5.0
+
 ## 1.1.0
 
 ### Minor Changes
