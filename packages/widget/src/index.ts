@@ -33,7 +33,7 @@ export interface OnsetWidgetOptions {
   };
 }
 
-const WIDGET_URL = "https://widget.onset.io";
+const WIDGET_URL = "https://widget-v2.onset.io";
 
 export class OnsetWidget {
   private widget: HTMLIFrameElement | null = null;
@@ -95,12 +95,12 @@ export class OnsetWidget {
     base.target = "_blank";
 
     const script = document.createElement("script");
-    script.src = `${WIDGET_URL}/assets/widget.js`;
+    script.src = `${WIDGET_URL}/app.js`;
     script.async = true;
     script.type = "module";
 
     const style = document.createElement("link");
-    style.href = `${WIDGET_URL}/assets/widget.css`;
+    style.href = `${WIDGET_URL}/app.css`;
     style.rel = "stylesheet";
 
     // root div

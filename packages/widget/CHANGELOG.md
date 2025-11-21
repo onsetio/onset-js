@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.2
+
+### Patch Changes
+
+- fixed the widget path
+
 ## 1.0.1
 
 ### Patch Changes
