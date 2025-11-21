@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.1
+
+### Patch Changes
+
+- feat: added remove method
+
 ## 1.0.0
 
 ### Major Changes

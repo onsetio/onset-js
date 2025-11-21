@@ -8,7 +8,7 @@ type QueueItem<T extends keyof OnsetWidget = keyof OnsetWidget> = {
 
 type Release = {
   id: string;
-  url: string;
+  page: string;
   title: string;
   released_at: string;
   description: string;
@@ -16,7 +16,7 @@ type Release = {
 };
 
 export interface OnsetWidgetOptions {
-  slug?: string;
+  page: string;
   debug?: boolean;
   title?: string;
   theme?: "light" | "dark" | "system";
@@ -28,6 +28,8 @@ export interface OnsetWidgetOptions {
     onLoaded?: (releases: Release[]) => void;
     onWidgetOpen?: () => void;
     onWidgetClose?: () => void;
+    onPopupOpen?: (releaseId: string) => void;
+    onPopupClose?: () => void;
   };
 }
 
@@ -41,9 +43,9 @@ export class OnsetWidget {
   private isLoaded = false;
   private releases: Release[] = [];
 
-  constructor(options: OnsetWidgetOptions = {}) {
-    if (!options.slug) {
-      throw new Error('OnsetWidget: "slug" option is required');
+  constructor(options: OnsetWidgetOptions) {
+    if (!options.page) {
+      throw new Error('OnsetWidget: "page" option is required');
     }
 
     this.options = {
@@ -56,8 +58,8 @@ export class OnsetWidget {
     };
 
     this.log("Initializing widget with options:", options);
+
     this.mountWidget();
-    this.addEventListener();
     this.showLatestReleasePopup();
   }
 
@@ -117,9 +119,12 @@ export class OnsetWidget {
     container.append(iframe);
     document.body.append(container);
     this.log("Widget mounted");
+
+    document.addEventListener("message", this.eventListener.bind(this));
+    this.log("Event listeners added");
   }
 
-  private addEventListener() {
+  private eventListener() {
     this.log("Adding event listeners...");
 
     window.addEventListener("message", (event) => {
@@ -286,7 +291,11 @@ export class OnsetWidget {
       return;
     }
 
-    const latestRelease = this.releases[0];
+    const latestRelease = this.releases.sort(
+      (a, b) =>
+        new Date(b.released_at).getTime() - new Date(a.released_at).getTime()
+    )[0];
+
     const lastSeenReleaseIds = getCookie("onset:latest")?.split(",") || [];
 
     if (lastSeenReleaseIds.includes(latestRelease.id as string)) {
@@ -457,6 +466,8 @@ export class OnsetWidget {
     }
 
     this.postMessage({ type: "openedPopup", releaseId: id });
+    this.options.callbacks?.onPopupOpen?.(id);
+    this.log("Popup opened for release ID:", id);
   }
 
   /**
@@ -479,5 +490,25 @@ export class OnsetWidget {
     this.widget.style.height = "0";
 
     this.postMessage({ type: "closedPopup" });
+    this.options.callbacks?.onPopupClose?.();
+    this.log("Popup closed");
+  }
+
+  /**
+   * Removes the widget from the DOM and cleans up event listeners.
+   */
+  public remove() {
+    this.log("Removing the widget...");
+
+    const container = document.getElementById("ow_container");
+    if (container) {
+      document.body.removeChild(container);
+      this.log("Widget removed");
+    } else {
+      this.log("Widget container not found, nothing to remove");
+    }
+
+    document.removeEventListener("message", this.eventListener.bind(this));
+    this.log("Event listeners removed");
   }
 }
