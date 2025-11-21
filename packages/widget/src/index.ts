@@ -116,12 +116,12 @@ export class OnsetWidget {
 
     this.widget = iframe;
 
+    document.addEventListener("message", this.eventListener.bind(this));
+    this.log("Event listeners added");
+
     container.append(iframe);
     document.body.append(container);
     this.log("Widget mounted");
-
-    document.addEventListener("message", this.eventListener.bind(this));
-    this.log("Event listeners added");
   }
 
   private eventListener() {

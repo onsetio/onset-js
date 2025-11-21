@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.3
+
+### Patch Changes
+
+- moved up event listener
+
 ## 1.0.2
 
 ### Patch Changes
