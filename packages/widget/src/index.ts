@@ -116,64 +116,60 @@ export class OnsetWidget {
 
     this.widget = iframe;
 
-    document.addEventListener("message", this.eventListener.bind(this));
-    this.log("Event listeners added");
-
     container.append(iframe);
     document.body.append(container);
     this.log("Widget mounted");
   }
 
-  private eventListener() {
-    this.log("Adding event listeners...");
+  private eventListener(event: MessageEvent) {
+    if (event.data?.source !== "onset") {
+      return;
+    }
 
-    window.addEventListener("message", (event) => {
-      if (event.data?.source !== "onset") {
-        return;
-      }
+    this.log("Received message from widget:", event.data);
 
-      this.log("Received message from widget:", event.data);
-
-      switch (event.data.type) {
-        case "ready":
-          this.log("Widget is ready");
-          this.isReady = true;
-          this.postMessage({ type: "init", options: this.options });
-          this.options.callbacks?.onReady?.();
-          this.flushQueue("ready");
-          break;
-        case "loaded":
-          this.log("Widget has loaded");
-          this.isLoaded = true;
-          this.releases = event.data.releases;
-          this.options.callbacks?.onLoaded?.(this.releases);
-          this.flushQueue("loaded");
-          break;
-        case "openWidget":
-          this.openWidget();
-          break;
-        case "closeWidget":
-          this.closeWidget();
-          break;
-        case "closePopup":
-          this.closePopup();
-          break;
-        case "expandPopup":
-          this.expandPopup();
-          break;
-        case "collapsePopup":
-          this.collapsePopup();
-          break;
-        case "resizePopup":
-          this.resizePopup(event.data.size);
-          break;
-      }
-    });
+    switch (event.data.type) {
+      case "ready":
+        this.log("Widget is ready");
+        this.isReady = true;
+        this.postMessage({ type: "init", options: this.options });
+        this.options.callbacks?.onReady?.();
+        this.flushQueue("ready");
+        break;
+      case "loaded":
+        this.log("Widget has loaded");
+        this.isLoaded = true;
+        this.releases = event.data.releases;
+        this.options.callbacks?.onLoaded?.(this.releases);
+        this.flushQueue("loaded");
+        break;
+      case "openWidget":
+        this.openWidget();
+        break;
+      case "closeWidget":
+        this.closeWidget();
+        break;
+      case "closePopup":
+        this.closePopup();
+        break;
+      case "expandPopup":
+        this.expandPopup();
+        break;
+      case "collapsePopup":
+        this.collapsePopup();
+        break;
+      case "resizePopup":
+        this.resizePopup(event.data.size);
+        break;
+    }
   }
 
   private postMessage(data: Record<string, unknown>) {
     this.log("Posting message to widget:", data);
-    this.widget?.contentWindow?.postMessage({ source: "onset", ...data }, "*");
+    this.widget?.contentWindow?.postMessage(
+      { source: "onset", ...JSON.parse(JSON.stringify(data)) },
+      "*"
+    );
   }
 
   private flushQueue(lifecycle: "ready" | "loaded") {
@@ -508,7 +504,7 @@ export class OnsetWidget {
       this.log("Widget container not found, nothing to remove");
     }
 
-    document.removeEventListener("message", this.eventListener.bind(this));
+    window.removeEventListener("message", this.eventListener.bind(this));
     this.log("Event listeners removed");
   }
 }

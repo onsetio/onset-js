@@ -1,5 +1,17 @@
 # @onset/widget
 
+## 1.0.5
+
+### Patch Changes
+
+- fixed the payload
+
+## 1.0.4
+
+### Patch Changes
+
+- fix event listener
+
 ## 1.0.3
 
 ### Patch Changes
