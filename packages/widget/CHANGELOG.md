@@ -1,5 +1,17 @@
 # @onset/widget
 
+## 1.0.7
+
+### Patch Changes
+
+- fixed the visibility
+
+## 1.0.6
+
+### Patch Changes
+
+- added event listner back
+
 ## 1.0.5
 
 ### Patch Changes

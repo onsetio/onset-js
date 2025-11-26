@@ -88,8 +88,14 @@ export class OnsetWidget {
     iframe.style.border = "none";
     iframe.style.position = "fixed";
     iframe.style.bottom = "10px";
-    iframe.style.zIndex = "999999";
+    iframe.style.zIndex = "-2147483638";
     iframe.style.opacity = "0";
+
+    if (this.options.widgetPosition === "left") {
+      iframe.style.transform = "translateX(calc(-100% - 10px))";
+    } else if (this.options.widgetPosition === "right") {
+      iframe.style.transform = "translateX(calc(100% + 10px))";
+    }
 
     const base = document.createElement("base");
     base.target = "_blank";
@@ -115,6 +121,9 @@ export class OnsetWidget {
     });
 
     this.widget = iframe;
+
+    window.addEventListener("message", this.eventListener.bind(this));
+    this.log("Event listeners added");
 
     container.append(iframe);
     document.body.append(container);
@@ -360,6 +369,7 @@ export class OnsetWidget {
     this.widget.style.right = "unset";
     this.widget.style.transform = "unset";
     this.widget.style.width = "100%";
+    this.widget.style.zIndex = "2147483638";
 
     if (this.options.widgetPosition === "left") {
       this.widget.style.maxWidth = "480px";
@@ -375,20 +385,16 @@ export class OnsetWidget {
       this.widget.style.transform = "translateX(calc(100% + 10px))";
     }
 
-    this.widget.addEventListener(
-      "transitionend",
-      () => {
-        this.widget!.style.opacity = "1";
+    setTimeout(() => {
+      this.widget!.style.opacity = "1";
 
-        if (this.options.widgetPosition !== "center") {
-          this.widget!.style.transform = "translateX(0%)";
-        }
+      if (this.options.widgetPosition !== "center") {
+        this.widget!.style.transform = "translateX(0%)";
+      }
 
-        this.postMessage({ type: "openedWidget" });
-        this.options.callbacks?.onWidgetOpen?.();
-      },
-      { once: true }
-    );
+      this.postMessage({ type: "openedWidget" });
+      this.options.callbacks?.onWidgetOpen?.();
+    }, 10);
   }
 
   /**
@@ -406,22 +412,17 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget!.style.opacity = "0";
+    this.widget.style.opacity = "0";
+    this.widget.style.zIndex = "-2147483638";
 
     if (this.options.widgetPosition === "left") {
-      this.widget!.style.transform = "translateX(calc(-100% - 10px))";
+      this.widget.style.transform = "translateX(calc(-100% - 10px))";
     } else if (this.options.widgetPosition === "right") {
-      this.widget!.style.transform = "translateX(calc(100% + 10px))";
+      this.widget.style.transform = "translateX(calc(100% + 10px))";
     }
 
-    this.widget.addEventListener(
-      "transitionend",
-      () => {
-        this.postMessage({ type: "closedWidget" });
-        this.options.callbacks?.onWidgetClose?.();
-      },
-      { once: true }
-    );
+    this.postMessage({ type: "closedWidget" });
+    this.options.callbacks?.onWidgetClose?.();
   }
 
   /**
@@ -445,11 +446,12 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.opacity = "1";
     this.widget.style.width = "100%";
     this.widget.style.maxWidth = "360px";
     this.widget.style.minWidth = "320px";
     this.widget.style.height = "0px";
+    this.widget.style.zIndex = "2147483638";
+    this.widget.style.opacity = "1";
 
     if (this.options.popupPosition === "left") {
       this.widget.style.left = "10px";
@@ -484,6 +486,8 @@ export class OnsetWidget {
     this.widget.style.opacity = "0";
     this.widget.style.width = "0";
     this.widget.style.height = "0";
+    this.widget.style.opacity = "0";
+    this.widget.style.zIndex = "-2147483638";
 
     this.postMessage({ type: "closedPopup" });
     this.options.callbacks?.onPopupClose?.();
