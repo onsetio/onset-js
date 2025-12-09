@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.8
+
+### Patch Changes
+
+- hiding release alert for first time users
+
 ## 1.0.7
 
 ### Patch Changes

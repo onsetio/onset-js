@@ -301,7 +301,13 @@ export class OnsetWidget {
         new Date(b.released_at).getTime() - new Date(a.released_at).getTime()
     )[0];
 
-    const lastSeenReleaseIds = getCookie("onset:latest")?.split(",") || [];
+    const lastSeenReleaseIds = getCookie("onset:latest")?.split(",");
+
+    if (!lastSeenReleaseIds) {
+      this.log("No latest release cookie found, not showing popup");
+      setCookie("onset:latest", latestRelease.id);
+      return;
+    }
 
     if (lastSeenReleaseIds.includes(latestRelease.id as string)) {
       this.log("Latest release already seen, not showing popup");
