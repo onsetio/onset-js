@@ -72,7 +72,7 @@ export class OnsetWidget {
       "%c[Onset Widget]",
       "color: #608b4e;",
       message,
-      ...optionalParams
+      ...optionalParams,
     );
   }
 
@@ -90,12 +90,6 @@ export class OnsetWidget {
     iframe.style.bottom = "10px";
     iframe.style.zIndex = "-2147483638";
     iframe.style.opacity = "0";
-
-    if (this.options.widgetPosition === "left") {
-      iframe.style.transform = "translateX(calc(-100% - 10px))";
-    } else if (this.options.widgetPosition === "right") {
-      iframe.style.transform = "translateX(calc(100% + 10px))";
-    }
 
     const base = document.createElement("base");
     base.target = "_blank";
@@ -177,7 +171,7 @@ export class OnsetWidget {
     this.log("Posting message to widget:", data);
     this.widget?.contentWindow?.postMessage(
       { source: "onset", ...JSON.parse(JSON.stringify(data)) },
-      "*"
+      "*",
     );
   }
 
@@ -213,13 +207,22 @@ export class OnsetWidget {
     if (this.options.widgetPosition === "left") {
       this.widget.style.maxWidth = "480px";
 
-      if (this.options.popupPosition === "left") {
-        this.widget.style.left = "10px";
-      } else {
+      if (this.options.popupPosition === "right") {
         this.widget.style.right = "100%";
         this.widget.style.transform = "translateX(calc(100% + 10px))";
+      } else {
+        this.widget.style.left = "10px";
       }
-    } else if (this.options.widgetPosition === "center") {
+    } else if (this.options.widgetPosition === "right") {
+      this.widget.style.maxWidth = "480px";
+
+      if (this.options.popupPosition === "left") {
+        this.widget.style.left = "100%";
+        this.widget.style.transform = "translateX(calc(-100% - 10px))";
+      } else {
+        this.widget.style.right = "10px";
+      }
+    } else {
       this.widget.style.maxWidth = "580px";
 
       if (this.options.popupPosition === "left") {
@@ -228,15 +231,6 @@ export class OnsetWidget {
       } else {
         this.widget.style.right = "50%";
         this.widget.style.transform = "translateX(50%)";
-      }
-    } else {
-      this.widget.style.maxWidth = "480px";
-
-      if (this.options.popupPosition === "left") {
-        this.widget.style.left = "100%";
-        this.widget.style.transform = "translateX(calc(-100% - 10px))";
-      } else {
-        this.widget.style.right = "10px";
       }
     }
 
@@ -298,7 +292,7 @@ export class OnsetWidget {
 
     const latestRelease = this.releases.sort(
       (a, b) =>
-        new Date(b.released_at).getTime() - new Date(a.released_at).getTime()
+        new Date(b.released_at).getTime() - new Date(a.released_at).getTime(),
     )[0];
 
     const lastSeenReleaseIds = getCookie("onset:latest")?.split(",");
@@ -318,7 +312,7 @@ export class OnsetWidget {
 
     setCookie(
       "onset:latest",
-      Array.from(new Set(lastSeenReleaseIds)).join(",")
+      Array.from(new Set(lastSeenReleaseIds)).join(","),
     );
 
     this.openPopup(latestRelease.id as string);
@@ -332,7 +326,7 @@ export class OnsetWidget {
     if (!id) {
       this.log("No release ID provided to openReleaseNote");
       throw new Error(
-        'OnsetWidget: "id" parameter is required for openReleaseNote'
+        'OnsetWidget: "id" parameter is required for openReleaseNote',
       );
     }
 
@@ -381,14 +375,14 @@ export class OnsetWidget {
       this.widget.style.maxWidth = "480px";
       this.widget.style.left = "10px";
       this.widget.style.transform = "translateX(calc(-100% - 10px))";
-    } else if (this.options.widgetPosition === "center") {
-      this.widget.style.maxWidth = "580px";
-      this.widget.style.left = "50%";
-      this.widget.style.transform = "translateX(-50%)";
-    } else {
+    } else if (this.options.widgetPosition === "right") {
       this.widget.style.maxWidth = "480px";
       this.widget.style.right = "10px";
       this.widget.style.transform = "translateX(calc(100% + 10px))";
+    } else {
+      this.widget.style.maxWidth = "580px";
+      this.widget.style.left = "50%";
+      this.widget.style.transform = "translateX(-50%)";
     }
 
     setTimeout(() => {
@@ -400,7 +394,7 @@ export class OnsetWidget {
 
       this.postMessage({ type: "openedWidget" });
       this.options.callbacks?.onWidgetOpen?.();
-    }, 10);
+    }, 300);
   }
 
   /**
