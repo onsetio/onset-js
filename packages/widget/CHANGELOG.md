@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 1.0.10
+
+### Patch Changes
+
+- fixed transitions
+
 ## 1.0.9
 
 ### Patch Changes

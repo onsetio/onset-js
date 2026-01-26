@@ -84,12 +84,12 @@ export class OnsetWidget {
 
     const iframe = document.createElement("iframe");
     iframe.id = "ow_iframe";
-    iframe.style.transition = "all 0.3s ease-in-out";
     iframe.style.border = "none";
     iframe.style.position = "fixed";
     iframe.style.bottom = "10px";
     iframe.style.zIndex = "-2147483638";
     iframe.style.opacity = "0";
+    iframe.style.transition = "all 0.3s ease-in-out";
 
     const base = document.createElement("base");
     base.target = "_blank";
@@ -364,6 +364,7 @@ export class OnsetWidget {
       return;
     }
 
+    this.widget.style.transition = "none";
     this.widget.style.height = "calc(100vh - 20px)";
     this.widget.style.left = "unset";
     this.widget.style.right = "unset";
@@ -386,6 +387,7 @@ export class OnsetWidget {
     }
 
     setTimeout(() => {
+      this.widget!.style.transition = "all 0.3s ease-in-out";
       this.widget!.style.opacity = "1";
 
       if (this.options.widgetPosition !== "center") {
@@ -394,7 +396,7 @@ export class OnsetWidget {
 
       this.postMessage({ type: "openedWidget" });
       this.options.callbacks?.onWidgetOpen?.();
-    }, 300);
+    }, 100);
   }
 
   /**
@@ -412,17 +414,28 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.opacity = "0";
+    this.widget.style.transition = "none";
     this.widget.style.zIndex = "-2147483638";
 
-    if (this.options.widgetPosition === "left") {
-      this.widget.style.transform = "translateX(calc(-100% - 10px))";
-    } else if (this.options.widgetPosition === "right") {
-      this.widget.style.transform = "translateX(calc(100% + 10px))";
-    }
+    setTimeout(() => {
+      this.widget!.style.transition = "all 0.3s ease-in-out";
+      this.widget!.style.opacity = "0";
 
-    this.postMessage({ type: "closedWidget" });
-    this.options.callbacks?.onWidgetClose?.();
+      if (this.options.widgetPosition === "left") {
+        this.widget!.style.transform = "translateX(calc(-100% - 10px))";
+      } else if (this.options.widgetPosition === "right") {
+        this.widget!.style.transform = "translateX(calc(100% + 10px))";
+      }
+
+      this.widget?.addEventListener(
+        "transitionend",
+        () => {
+          this.postMessage({ type: "closedWidget" });
+          this.options.callbacks?.onWidgetClose?.();
+        },
+        { once: true },
+      );
+    }, 100);
   }
 
   /**
