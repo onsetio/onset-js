@@ -79,17 +79,92 @@ export class OnsetWidget {
   private mountWidget() {
     this.log("Mounting the widget...");
 
-    const container = document.createElement("div");
-    container.id = "ow_container";
-
     const iframe = document.createElement("iframe");
-    iframe.id = "ow_iframe";
-    iframe.style.border = "none";
-    iframe.style.position = "fixed";
-    iframe.style.bottom = "10px";
-    iframe.style.zIndex = "-2147483638";
-    iframe.style.opacity = "0";
-    iframe.style.transition = "all 0.3s ease-in-out";
+    iframe.id = "ow_widget";
+
+    // setting to widget by default
+    iframe.dataset.type = "widget";
+    iframe.dataset.direction = this.options.widgetPosition;
+    iframe.dataset.state = "closed";
+
+    const css = document.createElement("style");
+    css.innerHTML = `
+      #ow_widget {
+        opacity: 0;
+        border: none;
+        bottom: 10px;
+        position: fixed;
+      }
+
+      #ow_widget[data-type="widget"] {
+        opacity: 1;
+        z-index: 2147483638;
+        transform: translateX(0%);
+        height: calc(100vh - 20px);
+      }
+
+      #ow_widget[data-type="widget"][data-direction="left"] {
+        left: 10px;
+        width: 480px;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+      }
+
+      #ow_widget[data-type="widget"][data-direction="left"][data-state="closed"] {
+        opacity: 0;
+        transform: translateX(calc(-100% - 10px));
+      }
+
+      #ow_widget[data-type="widget"][data-direction="right"] {
+        right: 10px;
+        width: 480px;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+      }
+
+      #ow_widget[data-type="widget"][data-direction="right"][data-state="closed"] {
+        opacity: 0;
+        transform: translateX(calc(100% + 10px));
+      }
+
+      #ow_widget[data-type="widget"][data-direction="center"] {
+        left: 50%;
+        width: 580px;
+        transform: translateX(-50%);
+        transition: opacity 0.3s ease-in-out;
+      }
+
+      #ow_widget[data-type="widget"][data-direction="center"][data-state="closed"] {
+        opacity: 0;
+        z-index: -2147483638;
+      }
+
+      #ow_widget[data-type="popup"] {
+        width: 100%;
+        max-width: 360px;
+        transition: all 0.3s ease-in-out;
+        transform: translateY(calc(100% + 10px));
+      }
+
+      #ow_widget[data-type="popup"][data-direction="left"] {
+        left: 10px;
+      }
+
+      #ow_widget[data-type="popup"][data-direction="right"] {
+        right: 10px;
+      }
+
+      #ow_widget[data-type="popup"][data-state="expanded"],
+      #ow_widget[data-type="popup"][data-state="open"] {
+        opacity: 1;
+        z-index: 2147483638;
+        transform: translateY(0%);
+      }
+
+      #ow_widget[data-type="popup"][data-state="expanded"] {
+        max-width: 480px;
+        height: calc(100vh - 20px) !important;
+      }
+    `;
+    document.head.append(css);
 
     const base = document.createElement("base");
     base.target = "_blank";
@@ -119,8 +194,7 @@ export class OnsetWidget {
     window.addEventListener("message", this.eventListener.bind(this));
     this.log("Event listeners added");
 
-    container.append(iframe);
-    document.body.append(container);
+    document.body.append(iframe);
     this.log("Widget mounted");
   }
 
@@ -196,45 +270,13 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.height = "calc(100vh - 20px)";
-    this.widget.style.opacity = "1";
+    this.widget.dataset.direction = this.options.popupPosition;
+    this.widget.dataset.type = "popup";
 
-    this.widget.style.left = "unset";
-    this.widget.style.right = "unset";
-    this.widget.style.transform = "unset";
-    this.widget.style.width = "100%";
-
-    if (this.options.widgetPosition === "left") {
-      this.widget.style.maxWidth = "480px";
-
-      if (this.options.popupPosition === "right") {
-        this.widget.style.right = "100%";
-        this.widget.style.transform = "translateX(calc(100% + 10px))";
-      } else {
-        this.widget.style.left = "10px";
-      }
-    } else if (this.options.widgetPosition === "right") {
-      this.widget.style.maxWidth = "480px";
-
-      if (this.options.popupPosition === "left") {
-        this.widget.style.left = "100%";
-        this.widget.style.transform = "translateX(calc(-100% - 10px))";
-      } else {
-        this.widget.style.right = "10px";
-      }
-    } else {
-      this.widget.style.maxWidth = "580px";
-
-      if (this.options.popupPosition === "left") {
-        this.widget.style.left = "50%";
-        this.widget.style.transform = "translateX(-50%)";
-      } else {
-        this.widget.style.right = "50%";
-        this.widget.style.transform = "translateX(50%)";
-      }
-    }
+    this.widget!.dataset.state = "expanded";
 
     this.postMessage({ type: "expandedPopup" });
+    this.log("Popup expanded");
   }
 
   private collapsePopup() {
@@ -243,18 +285,9 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.opacity = "1";
-    this.widget.style.height = "0px";
-    this.widget.style.transform = "unset";
-    this.widget.style.width = "100%";
-    this.widget.style.maxWidth = "360px";
-    this.widget.style.minWidth = "320px";
-
-    if (this.options.popupPosition === "left") {
-      this.widget.style.left = "10px";
-    } else {
-      this.widget.style.right = "10px";
-    }
+    this.widget.dataset.direction = this.options.popupPosition;
+    this.widget.dataset.type = "popup";
+    this.widget!.dataset.state = "open";
 
     this.postMessage({ type: "collapsedPopup" });
   }
@@ -319,37 +352,6 @@ export class OnsetWidget {
   }
 
   /**
-   * Opens the release note popup with the given release ID.
-   * @param id Release ID to highlight specific release.
-   */
-  public openReleaseNote(id: string = "latest") {
-    if (!id) {
-      this.log("No release ID provided to openReleaseNote");
-      throw new Error(
-        'OnsetWidget: "id" parameter is required for openReleaseNote',
-      );
-    }
-
-    if (!this.isLoaded) {
-      this.log("Widget not loaded, queuing openReleaseNote");
-      this.queue.push({
-        type: "openReleaseNote",
-        payload: id,
-        lifecycle: "loaded",
-      });
-      return;
-    }
-
-    if (this.releases.length === 0) {
-      this.log("No releases available, not opening release note");
-      return;
-    }
-
-    this.openPopup(id);
-    this.expandPopup();
-  }
-
-  /**
    * Opens the widget.
    */
   public openWidget() {
@@ -364,39 +366,15 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.transition = "none";
-    this.widget.style.height = "calc(100vh - 20px)";
-    this.widget.style.left = "unset";
-    this.widget.style.right = "unset";
-    this.widget.style.transform = "unset";
-    this.widget.style.width = "100%";
-    this.widget.style.zIndex = "2147483638";
-
-    if (this.options.widgetPosition === "left") {
-      this.widget.style.maxWidth = "480px";
-      this.widget.style.left = "10px";
-      this.widget.style.transform = "translateX(calc(-100% - 10px))";
-    } else if (this.options.widgetPosition === "right") {
-      this.widget.style.maxWidth = "480px";
-      this.widget.style.right = "10px";
-      this.widget.style.transform = "translateX(calc(100% + 10px))";
-    } else {
-      this.widget.style.maxWidth = "580px";
-      this.widget.style.left = "50%";
-      this.widget.style.transform = "translateX(-50%)";
-    }
+    this.widget.dataset.direction = this.options.widgetPosition;
+    this.widget.dataset.type = "widget";
+    this.widget.dataset.state = "closed";
+    this.widget.dataset.state = "open";
 
     setTimeout(() => {
-      this.widget!.style.transition = "all 0.3s ease-in-out";
-      this.widget!.style.opacity = "1";
-
-      if (this.options.widgetPosition !== "center") {
-        this.widget!.style.transform = "translateX(0%)";
-      }
-
       this.postMessage({ type: "openedWidget" });
       this.options.callbacks?.onWidgetOpen?.();
-    }, 100);
+    }, 500);
   }
 
   /**
@@ -414,28 +392,19 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.transition = "none";
-    this.widget.style.zIndex = "-2147483638";
+    this.widget.dataset.direction = this.options.widgetPosition;
+    this.widget.dataset.type = "widget";
+    this.widget.dataset.state = "closed";
 
-    setTimeout(() => {
-      this.widget!.style.transition = "all 0.3s ease-in-out";
-      this.widget!.style.opacity = "0";
-
-      if (this.options.widgetPosition === "left") {
-        this.widget!.style.transform = "translateX(calc(-100% - 10px))";
-      } else if (this.options.widgetPosition === "right") {
-        this.widget!.style.transform = "translateX(calc(100% + 10px))";
-      }
-
-      this.widget?.addEventListener(
-        "transitionend",
-        () => {
-          this.postMessage({ type: "closedWidget" });
-          this.options.callbacks?.onWidgetClose?.();
-        },
-        { once: true },
-      );
-    }, 100);
+    this.widget.addEventListener(
+      "transitionend",
+      () => {
+        this.postMessage({ type: "closedWidget" });
+        this.options.callbacks?.onWidgetClose?.();
+        this.log("Widget closed");
+      },
+      { once: true },
+    );
   }
 
   /**
@@ -459,26 +428,20 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.width = "100%";
-    this.widget.style.maxWidth = "360px";
-    this.widget.style.minWidth = "320px";
-    this.widget.style.height = "0px";
-    this.widget.style.zIndex = "2147483638";
-    this.widget.style.opacity = "1";
+    this.widget.dataset.direction = this.options.popupPosition;
+    this.widget.dataset.type = "popup";
 
-    if (this.options.popupPosition === "left") {
-      this.widget.style.left = "10px";
-    } else {
-      this.widget.style.right = "10px";
-    }
+    setTimeout(() => {
+      this.widget!.dataset.state = "open";
 
-    if (id === "latest") {
-      id = this.releases?.[0]?.id as string;
-    }
+      if (id === "latest") {
+        id = this.releases?.[0]?.id as string;
+      }
 
-    this.postMessage({ type: "openedPopup", releaseId: id });
-    this.options.callbacks?.onPopupOpen?.(id);
-    this.log("Popup opened for release ID:", id);
+      this.postMessage({ type: "openedPopup", releaseId: id });
+      this.options.callbacks?.onPopupOpen?.(id);
+      this.log("Popup opened for release ID:", id);
+    }, 500);
   }
 
   /**
@@ -496,15 +459,19 @@ export class OnsetWidget {
       return;
     }
 
-    this.widget.style.opacity = "0";
-    this.widget.style.width = "0";
-    this.widget.style.height = "0";
-    this.widget.style.opacity = "0";
-    this.widget.style.zIndex = "-2147483638";
+    this.widget.dataset.direction = this.options.popupPosition;
+    this.widget.dataset.type = "popup";
+    this.widget.dataset.state = "closed";
 
-    this.postMessage({ type: "closedPopup" });
-    this.options.callbacks?.onPopupClose?.();
-    this.log("Popup closed");
+    this.widget.addEventListener(
+      "transitionend",
+      () => {
+        this.postMessage({ type: "closedPopup" });
+        this.options.callbacks?.onPopupClose?.();
+        this.log("Popup closed");
+      },
+      { once: true },
+    );
   }
 
   /**
@@ -513,7 +480,8 @@ export class OnsetWidget {
   public remove() {
     this.log("Removing the widget...");
 
-    const container = document.getElementById("ow_container");
+    const container = document.getElementById("ow_widget");
+
     if (container) {
       document.body.removeChild(container);
       this.log("Widget removed");
