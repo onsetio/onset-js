@@ -100,7 +100,7 @@ export class OnsetWidget {
         opacity: 1;
         z-index: 2147483638;
         transform: translateX(0%);
-        height: calc(100vh - 20px);
+        height: calc(100vh - 20px) !important;
       }
 
       #ow_widget[data-type="widget"][data-direction="left"] {
@@ -366,15 +366,13 @@ export class OnsetWidget {
       return;
     }
 
+    this.postMessage({ type: "openedWidget" });
+    this.options.callbacks?.onWidgetOpen?.();
+
     this.widget.dataset.direction = this.options.widgetPosition;
     this.widget.dataset.type = "widget";
-    this.widget.dataset.state = "closed";
-    this.widget.dataset.state = "open";
 
-    setTimeout(() => {
-      this.postMessage({ type: "openedWidget" });
-      this.options.callbacks?.onWidgetOpen?.();
-    }, 500);
+    setTimeout(() => (this.widget!.dataset.state = "open"), 500);
   }
 
   /**
@@ -428,20 +426,18 @@ export class OnsetWidget {
       return;
     }
 
+    if (id === "latest") {
+      id = this.releases?.[0]?.id as string;
+    }
+
+    this.postMessage({ type: "openedPopup", releaseId: id });
+    this.options.callbacks?.onPopupOpen?.(id);
+    this.log("Popup opened for release ID:", id);
+
     this.widget.dataset.direction = this.options.popupPosition;
     this.widget.dataset.type = "popup";
 
-    setTimeout(() => {
-      this.widget!.dataset.state = "open";
-
-      if (id === "latest") {
-        id = this.releases?.[0]?.id as string;
-      }
-
-      this.postMessage({ type: "openedPopup", releaseId: id });
-      this.options.callbacks?.onPopupOpen?.(id);
-      this.log("Popup opened for release ID:", id);
-    }, 500);
+    setTimeout(() => (this.widget!.dataset.state = "open"), 500);
   }
 
   /**
