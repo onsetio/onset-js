@@ -98,6 +98,7 @@ export class OnsetWidget {
 
       #ow_widget[data-type="widget"] {
         opacity: 1;
+        width: 100%;
         z-index: 2147483638;
         transform: translateX(0%);
         height: calc(100vh - 20px) !important;
@@ -105,7 +106,7 @@ export class OnsetWidget {
 
       #ow_widget[data-type="widget"][data-direction="left"] {
         left: 10px;
-        width: 480px;
+        max-width: 480px;
         transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
       }
 
@@ -116,7 +117,7 @@ export class OnsetWidget {
 
       #ow_widget[data-type="widget"][data-direction="right"] {
         right: 10px;
-        width: 480px;
+        max-width: 480px;
         transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
       }
 
@@ -127,7 +128,7 @@ export class OnsetWidget {
 
       #ow_widget[data-type="widget"][data-direction="center"] {
         left: 50%;
-        width: 580px;
+        max-width: 580px;
         transform: translateX(-50%);
         transition: opacity 0.3s ease-in-out;
       }
