@@ -33,7 +33,7 @@ export interface OnsetWidgetOptions {
   };
 }
 
-const WIDGET_URL = "https://widget-v2.onset.io";
+const WIDGET_URL = "https://widget.onset.io";
 
 export class OnsetWidget {
   private widget: HTMLIFrameElement | null = null;

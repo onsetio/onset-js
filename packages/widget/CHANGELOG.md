@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 2.0.0
+
+### Major Changes
+
+- updated the widget source url
+
 ## 1.0.14
 
 ### Patch Changes
