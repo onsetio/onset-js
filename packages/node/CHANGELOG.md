@@ -1,5 +1,11 @@
 # @onset/node
 
+## 2.0.1
+
+### Patch Changes
+
+- fix type
+
 ## 2.0.0
 
 ### Major Changes
