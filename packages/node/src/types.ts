@@ -2,6 +2,11 @@ export interface Workspace {
   id: string;
   name: string;
   slug: string;
+  url: string;
+  members: {
+    id: string;
+    name: string;
+  }[];
 }
 
 export interface Subscriber {
@@ -18,11 +23,13 @@ export interface Subscriber {
 type Project = {
   id: string;
   name: string;
+  slug: string;
 };
 
 type Label = {
   id: string;
   name: string;
+  slug: string;
   color: string;
 };
 
@@ -93,8 +100,21 @@ export interface Milestone {
 
 export interface Webhook {
   id: string;
+  name: string;
   url: string;
+  signature: string;
   events: Record<string, boolean>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IncomingWebhook {
+  id: string;
+  name: string;
+  url: string;
+  is_enabled: boolean;
+  type: "RELEASE" | "MILESTONE" | "SUBSCRIBER";
+  last_triggered_at: string | null;
   created_at: string;
   updated_at: string;
 }

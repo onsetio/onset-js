@@ -5,28 +5,32 @@ export class Releases {
   constructor(private page: string) {}
 
   async fetch(project?: string, slug?: string): Promise<Release[]> {
-    const { data: releases } = await axios.get<Release[]>(
+    const { data: releases, status } = await axios.get<Release[]>(
       `https://${this.page}/releases.json`
     );
 
-    if (!project) {
-      return releases;
+    if (status !== 200) {
+      throw new Error(
+        `[ONSET] - Failed to fetch releases data for page: ${this.page}`
+      );
     }
 
-    return releases.filter((release) => {
-      if (!release.project) {
-        return false;
-      }
+    let filteredReleases = releases;
 
-      if (release.project.slug !== project) {
-        return false;
-      }
+    // Filter by project slug if provided
+    if (project) {
+      filteredReleases = filteredReleases.filter(
+        (release) => release.project?.slug === project
+      );
+    }
 
-      if (!slug) {
-        return true;
-      }
+    // Filter by release slug if provided
+    if (slug) {
+      filteredReleases = filteredReleases.filter(
+        (release) => release.slug === slug
+      );
+    }
 
-      return release.slug === slug;
-    });
+    return filteredReleases;
   }
 }

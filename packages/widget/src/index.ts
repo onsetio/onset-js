@@ -72,7 +72,7 @@ export class OnsetWidget {
       "%c[Onset Widget]",
       "color: #608b4e;",
       message,
-      ...optionalParams,
+      ...optionalParams
     );
   }
 
@@ -246,7 +246,7 @@ export class OnsetWidget {
     this.log("Posting message to widget:", data);
     this.widget?.contentWindow?.postMessage(
       { source: "onset", ...JSON.parse(JSON.stringify(data)) },
-      "*",
+      "*"
     );
   }
 
@@ -326,7 +326,7 @@ export class OnsetWidget {
 
     const latestRelease = this.releases.sort(
       (a, b) =>
-        new Date(b.released_at).getTime() - new Date(a.released_at).getTime(),
+        new Date(b.released_at).getTime() - new Date(a.released_at).getTime()
     )[0];
 
     const lastSeenReleaseIds = getCookie("onset:latest")?.split(",");
@@ -346,7 +346,7 @@ export class OnsetWidget {
 
     setCookie(
       "onset:latest",
-      Array.from(new Set(lastSeenReleaseIds)).join(","),
+      Array.from(new Set(lastSeenReleaseIds)).join(",")
     );
 
     this.openPopup(latestRelease.id as string);
@@ -402,7 +402,7 @@ export class OnsetWidget {
         this.options.callbacks?.onWidgetClose?.();
         this.log("Widget closed");
       },
-      { once: true },
+      { once: true }
     );
   }
 
@@ -467,7 +467,7 @@ export class OnsetWidget {
         this.options.callbacks?.onPopupClose?.();
         this.log("Popup closed");
       },
-      { once: true },
+      { once: true }
     );
   }
 

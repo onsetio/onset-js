@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 2.0.1
+
+### Patch Changes
+
+- updated the packages to reflect the new api
+
 ## 2.0.0
 
 ### Major Changes

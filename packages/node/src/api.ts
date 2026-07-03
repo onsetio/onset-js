@@ -5,6 +5,7 @@ import { Releases } from "./releases";
 import { Subscribers } from "./subscribers";
 import { Roadmap } from "./roadmap";
 import { Webhooks } from "./webhooks";
+import { IncomingWebhooks } from "./incoming-webhooks";
 
 export default class OnsetAPI {
   protected version = "v1";
@@ -42,5 +43,9 @@ export default class OnsetAPI {
 
   get webhooks() {
     return new Webhooks(this.client);
+  }
+
+  get incomingWebhooks() {
+    return new IncomingWebhooks(this.client);
   }
 }

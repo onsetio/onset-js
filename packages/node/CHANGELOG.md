@@ -1,5 +1,11 @@
 # @onset/node
 
+## 2.0.2
+
+### Patch Changes
+
+- updated the packages to reflect the new api
+
 ## 2.0.1
 
 ### Patch Changes

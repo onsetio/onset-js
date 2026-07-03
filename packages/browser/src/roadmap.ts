@@ -5,28 +5,32 @@ export class Roadmap {
   constructor(private page: string) {}
 
   async fetch(project?: string, slug?: string): Promise<Milestone[]> {
-    const { data: roadmap } = await axios.get<Milestone[]>(
+    const { data: roadmap, status } = await axios.get<Milestone[]>(
       `https://${this.page}/roadmap.json`
     );
 
-    if (!project) {
-      return roadmap;
+    if (status !== 200) {
+      throw new Error(
+        `[ONSET] - Failed to fetch roadmap data for page: ${this.page}`
+      );
     }
 
-    return roadmap.filter((feature) => {
-      if (!feature.project) {
-        return false;
-      }
+    let filteredRoadmap = roadmap;
 
-      if (feature.project.slug !== project) {
-        return false;
-      }
+    // Filter by project slug if provided
+    if (project) {
+      filteredRoadmap = filteredRoadmap.filter(
+        (milestone) => milestone.project?.slug === project
+      );
+    }
 
-      if (!slug) {
-        return true;
-      }
+    // Filter by milestone slug if provided
+    if (slug) {
+      filteredRoadmap = filteredRoadmap.filter(
+        (milestone) => milestone.slug === slug
+      );
+    }
 
-      return feature.slug === slug;
-    });
+    return filteredRoadmap;
   }
 }

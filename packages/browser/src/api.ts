@@ -1,5 +1,6 @@
 import { Releases } from "./releases";
 import { Roadmap } from "./roadmap";
+import { Workspace } from "./workspace";
 
 export default class OnsetBrowserClient {
   private page: string;
@@ -10,6 +11,10 @@ export default class OnsetBrowserClient {
     }
 
     this.page = page;
+  }
+
+  get workspace() {
+    return new Workspace(this.page);
   }
 
   get releases() {

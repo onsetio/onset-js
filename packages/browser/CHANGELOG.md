@@ -1,5 +1,11 @@
 # @onset/browser
 
+## 1.0.2
+
+### Patch Changes
+
+- updated the packages to reflect the new api
+
 ## 1.0.1
 
 ### Patch Changes
