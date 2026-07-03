@@ -39,23 +39,5 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script>
-      window.onsetWidgetSettings = {
-        triggerText: '🔔 What\'s New',
-        page: 'releases.onset.io'
-      };
-    
-      (function (e, t) {
-        e.onsetWidget = {};
-        e.onsetWidget.on = function () {
-          (e.onsetWidget.$ = e.onsetWidget.$ || []).push(arguments);
-        };
-        var c = t.getElementsByTagName('script')[0],
-        i = t.createElement('script');
-        i.async = true;
-        i.src = 'https://widget.onset.io/widget.js';
-        c.parentNode.insertBefore(i, c);
-      })(window, document);
-    </script>
   </body>
 </html>

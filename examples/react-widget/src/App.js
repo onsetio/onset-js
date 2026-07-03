@@ -1,28 +1,20 @@
-import './App.css';
+import "./App.css";
+import { OnsetWidget } from "@onsetio/widget";
 
 function App() {
-  const onClick = (action) => {
-    switch (action) {
-      case 'show':
-        window.onsetWidget.show();
-        break;
-      case 'hide':
-        window.onsetWidget.hide();
-        break;
-      case 'toggle':
-        window.onsetWidget.toggle();
-        break;
-      default:
-        break;
-    }   
-  };
+  const widget = new OnsetWidget({
+    page: "releases.onset.io",
+  });
 
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={() => onClick('show')}>Show Widget</button>
-        <button onClick={() => onClick('hide')}>Hide Widget</button>
-        <button onClick={() => onClick('toggle')}>Toggle Widget</button>
+        <button onClick={() => widget.openWidget()}>Show widget</button>
+        <button onClick={() => widget.closeWidget()}>Hide widget</button>
+        <button onClick={() => widget.openPopup("latest")}>
+          Show latest popup
+        </button>
+        <button onClick={() => widget.closePopup()}>Hide popup</button>
       </header>
     </div>
   );
