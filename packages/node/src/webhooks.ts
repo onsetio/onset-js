@@ -2,7 +2,7 @@ import type { Webhook } from "./types";
 import { Base } from "./base";
 
 type Payload = {
-  title: string;
+  name: string;
   url: string;
   events: Record<string, boolean>;
 };

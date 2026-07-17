@@ -25,6 +25,11 @@ export abstract class Base<T, Q, P> {
     return data;
   }
 
+  async patch(id: string, body: Partial<P>): Promise<T> {
+    const { data } = await this.client.patch<T>(`${this.path}/${id}`, body);
+    return data;
+  }
+
   async del(id: string): Promise<void> {
     const { data } = await this.client.delete(`${this.path}/${id}`);
     return data;

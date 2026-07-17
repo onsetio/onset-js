@@ -4,6 +4,7 @@ import { Base } from "./base";
 type Payload = {
   name: string;
   type: "RELEASE" | "MILESTONE" | "SUBSCRIBER";
+  is_enabled?: boolean;
 };
 
 type Query = Partial<{
