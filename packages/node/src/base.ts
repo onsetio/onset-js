@@ -1,6 +1,13 @@
 import type { AxiosInstance } from "axios";
 
-export abstract class Base<T, Q, P> {
+/**
+ * `C` is the create (POST) payload. `U` is the update (PATCH) payload and
+ * defaults to `Partial<C>` for resources where update just relaxes every
+ * create field to optional. Pass `U` explicitly when a resource's update
+ * body isn't a subset of its create body (e.g. a field is required on
+ * create but not accepted at all on update).
+ */
+export abstract class Base<T, Q, C, U = Partial<C>> {
   protected abstract path: string;
 
   constructor(private client: AxiosInstance) {}
@@ -15,18 +22,20 @@ export abstract class Base<T, Q, P> {
     return data;
   }
 
-  async create(body: P): Promise<T> {
+  async create(body: C): Promise<T> {
     const { data } = await this.client.post<T>(this.path, body);
     return data;
   }
 
-  async update(id: string, body: P): Promise<T> {
-    const { data } = await this.client.put<T>(`${this.path}/${id}`, body);
+  async update(id: string, body: U): Promise<T> {
+    const { data } = await this.client.patch<T>(`${this.path}/${id}`, body);
     return data;
   }
 
-  async del(id: string): Promise<void> {
-    const { data } = await this.client.delete(`${this.path}/${id}`);
+  async del(id: string): Promise<{ success: boolean }> {
+    const { data } = await this.client.delete<{ success: boolean }>(
+      `${this.path}/${id}`
+    );
     return data;
   }
 }

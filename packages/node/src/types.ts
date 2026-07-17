@@ -20,18 +20,32 @@ export interface Subscriber {
   updated_at: string;
 }
 
-type Project = {
+export type Project = {
   id: string;
   name: string;
   slug: string;
 };
 
-type Label = {
+export type Label = {
   id: string;
   name: string;
   slug: string;
   color: string;
 };
+
+export interface Contributor {
+  id: string;
+  name: string | null;
+  avatar_url: string | null;
+}
+
+export interface SubscriberList {
+  id: string;
+  name: string;
+  subscriber_count: number;
+  created_at: string;
+  updated_at: string;
+}
 
 type LinkAttachment = {
   type: "link";
@@ -65,7 +79,8 @@ export interface Release {
     content: string;
   }[];
   slug: string;
-  status: "DRAFT" | "RELEASED" | "SCHEDULED";
+  status: "DRAFT" | "RELEASED";
+  summary: string | null;
   version: string | null;
   is_pre_release: boolean;
   is_pinned: boolean;
@@ -89,8 +104,9 @@ export interface Milestone {
   body: string;
   slug: string;
   status: string;
-  stage: "BACKLOG" | "PLANNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+  stage: string;
   is_public: boolean;
+  upvote_count: number;
   labels: Label[];
   project: Project | null;
   created_at: string;
@@ -112,9 +128,9 @@ export interface IncomingWebhook {
   id: string;
   name: string;
   url: string;
-  is_enabled: boolean;
   type: "RELEASE" | "MILESTONE" | "SUBSCRIBER";
-  last_triggered_at: string | null;
-  created_at: string;
-  updated_at: string;
+  isEnabled: boolean;
+  lastTriggeredAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

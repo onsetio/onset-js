@@ -7,7 +7,7 @@ type Payload = {
   is_public?: boolean;
   status: Release["status"];
   slug: string;
-  project_id?: string;
+  project_id?: string | null;
   label_ids?: string[];
   contributor_ids?: string[];
   attachments?: Release["attachments"];
