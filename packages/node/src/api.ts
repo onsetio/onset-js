@@ -6,6 +6,8 @@ import { Subscribers } from "./subscribers";
 import { Roadmap } from "./roadmap";
 import { Webhooks } from "./webhooks";
 import { IncomingWebhooks } from "./incoming-webhooks";
+import { Projects } from "./projects";
+import { Labels } from "./labels";
 
 export default class OnsetAPI {
   protected version = "v1";
@@ -47,5 +49,13 @@ export default class OnsetAPI {
 
   get incomingWebhooks() {
     return new IncomingWebhooks(this.client);
+  }
+
+  get projects() {
+    return new Projects(this.client);
+  }
+
+  get labels() {
+    return new Labels(this.client);
   }
 }

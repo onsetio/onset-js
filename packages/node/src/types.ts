@@ -20,13 +20,13 @@ export interface Subscriber {
   updated_at: string;
 }
 
-type Project = {
+export type Project = {
   id: string;
   name: string;
   slug: string;
 };
 
-type Label = {
+export type Label = {
   id: string;
   name: string;
   slug: string;
