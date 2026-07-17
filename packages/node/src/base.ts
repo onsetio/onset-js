@@ -21,11 +21,6 @@ export abstract class Base<T, Q, P> {
   }
 
   async update(id: string, body: P): Promise<T> {
-    const { data } = await this.client.put<T>(`${this.path}/${id}`, body);
-    return data;
-  }
-
-  async patch(id: string, body: Partial<P>): Promise<T> {
     const { data } = await this.client.patch<T>(`${this.path}/${id}`, body);
     return data;
   }
