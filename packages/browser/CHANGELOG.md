@@ -1,5 +1,11 @@
 # @onset/browser
 
+## 1.0.3
+
+### Patch Changes
+
+- fixed minor typing bug
+
 ## 1.0.2
 
 ### Patch Changes
