@@ -10,7 +10,14 @@ type Query = Partial<{
   limit: number;
 }>;
 
-// Update requires the same field (`name`) as create per the API reference.
-export class SubscriberLists extends Base<SubscriberList, Query, Payload> {
+// Update requires the same field (`name`) as create, so `U` is passed
+// explicitly - the default `Partial<C>` would let `update(id, {})` compile and
+// then fail with a 400.
+export class SubscriberLists extends Base<
+  SubscriberList,
+  Query,
+  Payload,
+  Payload
+> {
   protected path = "/subscriber-lists";
 }

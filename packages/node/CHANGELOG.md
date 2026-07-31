@@ -1,5 +1,11 @@
 # @onset/node
 
+## 3.1.0
+
+### Minor Changes
+
+- Added missing fields, updated workspace and release publish methods
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,11 +1,28 @@
+export type MilestoneStage =
+  | "BACKLOG"
+  | "PLANNED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELED";
+
 export interface Workspace {
   id: string;
   name: string;
   slug: string;
+  /** Public changelog page URL for the workspace. */
   url: string;
-  members: {
+  /** Change types configured for releases in this workspace. */
+  release_change_types: {
     id: string;
-    name: string;
+    title: string;
+    color: string;
+  }[];
+  /** Status types configured for roadmap milestones in this workspace. */
+  roadmap_status_types: {
+    id: string;
+    title: string;
+    color: string;
+    stage: MilestoneStage;
   }[];
 }
 
@@ -79,7 +96,7 @@ export interface Release {
     content: string;
   }[];
   slug: string;
-  status: "DRAFT" | "RELEASED";
+  status: "DRAFT" | "SCHEDULED" | "RELEASED";
   summary: string | null;
   version: string | null;
   is_pre_release: boolean;
@@ -93,6 +110,8 @@ export interface Release {
   }[];
   attachments: (LinkAttachment | FileAttachment)[];
   project: Project | null;
+  /** Only set while `status` is `SCHEDULED`. */
+  scheduled_at: string | null;
   released_at: string | null;
   created_at: string;
   updated_at: string;
@@ -100,15 +119,18 @@ export interface Release {
 
 export interface Milestone {
   id: string;
+  number: number;
   title: string;
   body: string;
   slug: string;
   status: string;
-  stage: string;
+  stage: MilestoneStage;
   is_public: boolean;
   upvote_count: number;
   labels: Label[];
   project: Project | null;
+  started_at: string | null;
+  ended_at: string | null;
   created_at: string;
   updated_at: string;
   attachments: (LinkAttachment | FileAttachment)[];

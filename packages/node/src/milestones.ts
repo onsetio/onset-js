@@ -1,4 +1,4 @@
-import type { Milestone } from "./types";
+import type { Milestone, MilestoneStage } from "./types";
 import { Base } from "./base";
 
 type Payload = {
@@ -14,7 +14,9 @@ type Payload = {
 
 type Query = {
   status?: string;
+  stage?: MilestoneStage;
   project_id?: string;
+  label_ids?: string;
   is_public?: boolean;
   slug?: string;
   offset?: number;

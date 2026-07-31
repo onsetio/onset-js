@@ -10,7 +10,7 @@ import type { AxiosInstance } from "axios";
 export abstract class Base<T, Q, C, U = Partial<C>> {
   protected abstract path: string;
 
-  constructor(private client: AxiosInstance) {}
+  constructor(protected client: AxiosInstance) {}
 
   async list(params: Q): Promise<T[]> {
     const { data } = await this.client.get<T[]>(this.path, { params });
