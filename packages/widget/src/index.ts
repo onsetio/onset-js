@@ -63,6 +63,11 @@ export class OnsetWidget {
     this.showLatestReleasePopup();
   }
 
+  /**
+   * Logs messages to the console if debug mode is enabled.
+   * @param message The message to log.
+   * @param optionalParams Additional parameters to log.
+   */
   private log(message: string, ...optionalParams: unknown[]) {
     if (!this.options.debug) {
       return;
@@ -72,10 +77,13 @@ export class OnsetWidget {
       "%c[Onset Widget]",
       "color: #608b4e;",
       message,
-      ...optionalParams
+      ...optionalParams,
     );
   }
 
+  /**
+   * Mounts the widget iframe and sets up event listeners.
+   */
   private mountWidget() {
     this.log("Mounting the widget...");
 
@@ -98,10 +106,11 @@ export class OnsetWidget {
 
       #ow_widget[data-type="widget"] {
         opacity: 1;
-        width: 100%;
+        width: calc(100% - 20px);
         z-index: 2147483638;
         transform: translateX(0%);
-        height: calc(100vh - 20px) !important;
+        height: calc(100dvh - 20px) !important;
+        max-height: calc(100dvh - 20px) !important;
       }
 
       #ow_widget[data-type="widget"][data-direction="left"] {
@@ -139,7 +148,7 @@ export class OnsetWidget {
       }
 
       #ow_widget[data-type="popup"] {
-        width: 100%;
+        width: calc(100% - 20px);
         max-width: 360px;
         transition: all 0.3s ease-in-out;
         transform: translateY(calc(100% + 10px));
@@ -158,11 +167,12 @@ export class OnsetWidget {
         opacity: 1;
         z-index: 2147483638;
         transform: translateY(0%);
+        height: 100%;
       }
-
+        
       #ow_widget[data-type="popup"][data-state="expanded"] {
         max-width: 480px;
-        height: calc(100vh - 20px) !important;
+        max-height: calc(100dvh - 20px) !important;
       }
     `;
     document.head.append(css);
@@ -199,6 +209,10 @@ export class OnsetWidget {
     this.log("Widget mounted");
   }
 
+  /**
+   * Handles messages received from the widget iframe.
+   * @param event The message event.
+   */
   private eventListener(event: MessageEvent) {
     if (event.data?.source !== "onset") {
       return;
@@ -242,14 +256,22 @@ export class OnsetWidget {
     }
   }
 
+  /**
+   * Posts a message to the widget iframe.
+   * @param data The data to post.
+   */
   private postMessage(data: Record<string, unknown>) {
     this.log("Posting message to widget:", data);
     this.widget?.contentWindow?.postMessage(
       { source: "onset", ...JSON.parse(JSON.stringify(data)) },
-      "*"
+      "*",
     );
   }
 
+  /**
+   * Flushes the queued actions for the specified lifecycle stage.
+   * @param lifecycle The lifecycle stage to flush ("ready" or "loaded").
+   */
   private flushQueue(lifecycle: "ready" | "loaded") {
     this.log("Flushing queue...");
 
@@ -265,6 +287,9 @@ export class OnsetWidget {
     this.queue = this.queue.filter((item) => item.lifecycle !== lifecycle);
   }
 
+  /**
+   * Expands the popup to show more content.
+   */
   private expandPopup() {
     if (!this.widget) {
       this.log("Widget not mounted, not expanding popup");
@@ -280,6 +305,9 @@ export class OnsetWidget {
     this.log("Popup expanded");
   }
 
+  /**
+   * Collapses the popup to its original size.
+   */
   private collapsePopup() {
     if (!this.widget) {
       this.log("Widget not mounted, not collapsing popup");
@@ -293,17 +321,24 @@ export class OnsetWidget {
     this.postMessage({ type: "collapsedPopup" });
   }
 
+  /**
+   * Resizes the popup to the specified dimensions.
+   * @param size The new width and height for the popup.
+   */
   private resizePopup(size: { width: number; height: number }) {
     if (!this.widget) {
       this.log("Widget not mounted, not resizing popup");
       return;
     }
 
-    this.widget.style.height = `${size.height}px`;
+    this.widget.style.maxHeight = `${size.height}px`;
 
     this.postMessage({ type: "resizedPopup", size });
   }
 
+  /**
+   * Shows the latest release popup if conditions are met.
+   */
   private showLatestReleasePopup() {
     if (!this.isLoaded) {
       this.log("Widget not loaded, queuing showLatestReleasePopup");
@@ -326,7 +361,7 @@ export class OnsetWidget {
 
     const latestRelease = this.releases.sort(
       (a, b) =>
-        new Date(b.released_at).getTime() - new Date(a.released_at).getTime()
+        new Date(b.released_at).getTime() - new Date(a.released_at).getTime(),
     )[0];
 
     const lastSeenReleaseIds = getCookie("onset:latest")?.split(",");
@@ -346,7 +381,7 @@ export class OnsetWidget {
 
     setCookie(
       "onset:latest",
-      Array.from(new Set(lastSeenReleaseIds)).join(",")
+      Array.from(new Set(lastSeenReleaseIds)).join(","),
     );
 
     this.openPopup(latestRelease.id as string);
@@ -402,7 +437,7 @@ export class OnsetWidget {
         this.options.callbacks?.onWidgetClose?.();
         this.log("Widget closed");
       },
-      { once: true }
+      { once: true },
     );
   }
 
@@ -467,7 +502,7 @@ export class OnsetWidget {
         this.options.callbacks?.onPopupClose?.();
         this.log("Popup closed");
       },
-      { once: true }
+      { once: true },
     );
   }
 

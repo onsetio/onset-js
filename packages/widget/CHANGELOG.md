@@ -1,5 +1,11 @@
 # @onset/widget
 
+## 2.0.2
+
+### Patch Changes
+
+- fixed the responsiveness
+
 ## 2.0.1
 
 ### Patch Changes
