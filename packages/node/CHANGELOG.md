@@ -1,5 +1,11 @@
 # @onset/node
 
+## 3.2.0
+
+### Minor Changes
+
+- update the release change
+
 ## 3.1.0
 
 ### Minor Changes

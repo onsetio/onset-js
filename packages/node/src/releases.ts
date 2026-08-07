@@ -11,7 +11,10 @@ type Payload = {
   contributor_ids?: string[];
   attachments?: Release["attachments"];
   hero?: NonNullable<Release["hero"]>;
-  changes?: Release["changes"];
+  changes?: {
+    title: string;
+    content?: string | null;
+  }[];
   is_pinned?: boolean;
   is_pre_release?: boolean;
   version?: string;

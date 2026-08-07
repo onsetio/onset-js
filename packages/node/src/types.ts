@@ -91,9 +91,9 @@ export interface Release {
   } | null;
   body: string;
   changes: {
-    id: string;
-    change_id: string;
-    content: string;
+    title: string;
+    color: string;
+    content: string | null;
   }[];
   slug: string;
   status: "DRAFT" | "SCHEDULED" | "RELEASED";
@@ -110,7 +110,6 @@ export interface Release {
   }[];
   attachments: (LinkAttachment | FileAttachment)[];
   project: Project | null;
-  /** Only set while `status` is `SCHEDULED`. */
   scheduled_at: string | null;
   released_at: string | null;
   created_at: string;
